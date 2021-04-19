@@ -1,0 +1,100 @@
+{
+  "main": {
+    "id": "cb64324dc023246b",
+    "type": "split",
+    "children": [
+      {
+        "id": "645c5ffecdd27e4a",
+        "type": "leaf",
+        "active": true,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "CDP/CDP Kerberos.md",
+            "mode": "preview"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4d767b52ab5c58e8",
+    "type": "split",
+    "children": [
+      {
+        "id": "0d1c5d0adf76f587",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ecb21ae65189cd5b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "166661a6b1ab4854",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 132
+  },
+  "right": {
+    "id": "f00ff1417d74282b",
+    "type": "split",
+    "children": [
+      {
+        "id": "9a904d17f9ba4472",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c7777df6b2edac17",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "CDP/CDP Kerberos.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "lastOpenFiles": [
+    "CDP/CDP Kerberos.md",
+    "First Try/LIMBO.md",
+    "CDP/keberos_setup.md",
+    "CDP/pictures/Screen Shot 2021-04-19 at 11.47.40.png",
+    "CDP Kerberos.md",
+    "keberos_setup.md",
+    "Untitled.md",
+    "First Try/First Try.md",
+    "First Try/Note Apps.md",
+    "First Try/mermaid Introduction.md"
+  ]
+}

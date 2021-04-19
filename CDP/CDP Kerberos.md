@@ -1,10 +1,10 @@
 
 
-## 一、[前置作業](#前置作業)
-## 二、[CDP啟用Kerberos](#cdp啟用kerberos)
-## 三、[事後整合確認](#事後整合確認)
-## 前置作業
-#### 安裝與設定Kerberos Server
+# 一、[前置作業](#前置作業)
+# 二、[CDP啟用Kerberos](#cdp啟用kerberos)
+# 三、[事後整合確認](#事後整合確認)
+# 前置作業
+### 安裝與設定Kerberos Server
 1. 安裝Kerberos Server
 	 - 選定一台主機安裝
 	 - Cloudera Manager需要openldap-clients
@@ -71,7 +71,7 @@
 	*/admin@CW.COM	    *
 	```
 
-#### 安裝JCE POLICY
+### 安裝JCE POLICY
 CDP要求Kerberos要使用aes256加密，這的加密法需要另外下載
 1. 下載jce_policy-8.zip
 	 - 需要登入ORACLE手動下載解壓縮，在傳到安裝Kerberos的主機
@@ -83,11 +83,11 @@ CDP要求Kerberos要使用aes256加密，這的加密法需要另外下載
 	cp local_policy.jar US_export_policy.jar $JAVA_HOME/lib/security
 	```
 
-#### 建立Kerberos的database
+### 建立Kerberos的database
 ```
 kdb5_util create -s
 ```
-#### 建立Kerberos的管理員principal
+### 建立Kerberos的管理員principal
 1. 進入本地的kadmin shell
 	```
 	kadmin.local
@@ -100,13 +100,13 @@ kdb5_util create -s
 	```
 	kadmin.local:  exit
 	```
- #### 建立Cloudera Manager的principal
+ ### 建立Cloudera Manager的principal
 - 密碼設定為cloudera-scm
 - @後面是Kerberos的realm
 ```
 kadmin.local:  -pw cloudera-scm cloudera-scm/admin@US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
 ```
-#### 啟動KDC(Key Distribution Center)
+### 啟動KDC(Key Distribution Center)
 接下來可以啟動KDC了！
 ```
 systemctl start krb5kdc.service
@@ -115,7 +115,7 @@ systemctl enable krb5kdc.service
 systemctl enable kadmin.service
 ```
 
-#### 安裝Kerberos Client
+### 安裝Kerberos Client
 1. 安裝Kerberos Client
 	 - 叢集裡所有主機都要安裝
 	```
@@ -129,8 +129,8 @@ systemctl enable kadmin.service
 
 
 
-## CDP啟用Kerberos
-#### 啟用Kerberos
+# CDP啟用Kerberos
+### 啟用Kerberos
  - 若是在建立CDP前啟用Kerberos
 	建立時可以看到啟用Kerberos的提示
 	![[Screen Shot 2021-04-19 at 11.47.40.png]]
@@ -158,7 +158,7 @@ systemctl enable kadmin.service
 		![[圖]]
 	1. 製作缺漏的Kerberos Principal
 		![[圖]]
-#### 為HDFS建立Superuser principal
+### 為HDFS建立Superuser principal
 1. 修改HDFS的superuser group
    例如設定為`supergroup`
    ![[圖]]
@@ -176,8 +176,8 @@ systemctl enable kadmin.service
 	kinit supergroup@US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
 	```
 	
-## 事後整合確認
-#### 確認Kerberos整合成功
+# 事後整合確認
+### 確認Kerberos整合成功
 1. 在Gateway或任一台主機建立新user
 	```
 	useradd malvin

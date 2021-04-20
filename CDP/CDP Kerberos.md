@@ -131,37 +131,50 @@ systemctl enable kadmin.service
 
 # CDP啟用Kerberos
 ### 啟用Kerberos
- - 若是在建立CDP前啟用Kerberos
+ - 若是「在建立CDP前」啟用Kerberos
 	建立時可以看到啟用Kerberos的提示
 	![Kerberos](https://i.imgur.com/jDRDhQh.png)
 	使用Wizard啟用Kerberos
 	1. Getting Started
-		選擇MIT KDC
-		![[圖]]
+		 - 選擇MIT KDC
+		 - 勾選已經完成上述步驟
+		![Step1](https://i.imgur.com/DokepsQ.png)
 	1. Enter KDC Information
-		![[圖]]
+		 - Kerberos Encryption Type：使用aes256，比較安全
+		 - Kerberos Security Realm：安裝Kerberos Server的主機，不用hostname，英文全部大寫
+		 - KDC Server Host：安裝Kerberos Server的主機FQDN
+		 - KDC Admin Server Host：安裝Kerberos Server的主機FQDN
+		 - 其他參數基本上不用填寫或修改
+		![Step2](https://i.imgur.com/fWmWNp7.png)
 	1. Manage krb5.conf
-		![[圖]]
+		 - 勾選管控krb5.conf，其他參數基本上不用填寫或修改
+		![Step3](https://i.imgur.com/yFOnG8n.png)
 	1. Enter Account Credentials
 		輸入「[[#建立Cloudera Manager的principal]]」的步驟中的
 		帳號密碼（markdown錨點有問題）
-		![[圖]]
+		![Step4](https://i.imgur.com/Aw6CoJ3.png)
 	1. Command Details
 		等待指令跑完就完成了！
- - 若是建立好CDP後啟用Kerberos
-	1. 進入建立好的叢集（Cluster）頁面，點擊叢集名稱右邊的「三的點點」，下拉式選單中有Enable Kerberos
+ - 若是「建立好CDP後」啟用Kerberos
+	1. 進入建立好的叢集（Cluster）頁面，點擊叢集名稱右邊的「三的點點」，下拉式選單中有Enable Kerberos，進入後按照步驟填寫相關參數
 		![Kerberos](https://i.imgur.com/b6TtVQb.png)
-	1. 輸入Kerberos管理員帳號密碼
-		左欄Adminisration > Security，進到Security頁面點擊"Import Kerberos Account Manager Credentials"
-		輸入「[[#建立Cloudera Manager的principal]]」的步驟中的
-		帳號密碼（markdown錨點有問題）
-		![[圖]]
-	1. 製作缺漏的Kerberos Principal
-		![[圖]]
+- 其他設置
+	 - Kerberos參數
+		Administration > Settings
+		再利用關鍵字搜尋
+	 - Kerberos Credentials相關
+		左欄Adminisration > Security，進到Security頁面點擊"Kerberos Credentials"
+		![path](https://i.imgur.com/IIb7goM.png)
+		 - 輸入Kerberos管理員帳號密碼
+			輸入「[[#建立Cloudera Manager的principal]]」的步驟中的
+			帳號密碼（markdown錨點有問題）
+			![account manager](https://i.imgur.com/5KV3MK4.png)
+		 - 製作缺漏的Kerberos Principal（Hadoop core system users, such as `hdfs`）
+			![principal](https://i.imgur.com/UbF7xlr.png)
 ### 為HDFS建立Superuser principal
 1. 修改HDFS的superuser group
    例如設定為`supergroup`
-   ![[圖]]
+   ![superuser](https://i.imgur.com/Rg5v5jW.png)
 3. 在Gateway或任一台主機建立新user
 	```
 	useradd supergroup

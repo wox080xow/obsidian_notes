@@ -6,11 +6,24 @@
       {
         "id": "645c5ffecdd27e4a",
         "type": "leaf",
+        "dimension": 41.08455882352941,
         "state": {
           "type": "markdown",
           "state": {
             "file": "CDP/CDP Kerberos.md",
             "mode": "source"
+          }
+        }
+      },
+      {
+        "id": "f07cb8754e12dc1b",
+        "type": "leaf",
+        "dimension": 58.91544117647059,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "CDP/CDP Kerberos.md",
+            "mode": "preview"
           }
         }
       }

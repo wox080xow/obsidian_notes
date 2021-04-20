@@ -133,7 +133,7 @@ systemctl enable kadmin.service
 ### 啟用Kerberos
  - 若是在建立CDP前啟用Kerberos
 	建立時可以看到啟用Kerberos的提示
-	![[Screen Shot 2021-04-19 at 11.47.40.png]]
+	![Kerberos](https://i.imgur.com/jDRDhQh.png)
 	使用Wizard啟用Kerberos
 	1. Getting Started
 		選擇MIT KDC
@@ -150,7 +150,7 @@ systemctl enable kadmin.service
 		等待指令跑完就完成了！
  - 若是建立好CDP後啟用Kerberos
 	1. 進入建立好的叢集（Cluster）頁面，點擊叢集名稱右邊的「三的點點」，下拉式選單中有Enable Kerberos
-		![[Screen Shot 2021-04-19 at 12.20.06.png]]
+		![Kerberos](https://i.imgur.com/b6TtVQb.png)
 	1. 輸入Kerberos管理員帳號密碼
 		左欄Adminisration > Security，進到Security頁面點擊"Import Kerberos Account Manager Credentials"
 		輸入「[[#建立Cloudera Manager的principal]]」的步驟中的

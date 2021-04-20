@@ -156,7 +156,7 @@ systemctl enable kadmin.service
 	1. #### Command Details
 		等待指令跑完就完成了！
  - #### 若是「建立好CDP後」啟用Kerberos
-	1. 進入建立好的叢集（Cluster）頁面，點擊叢集名稱右邊的「三的點點」，下拉式選單中有Enable Kerberos，進入後按照步驟填寫相關參數
+	1. 進入建立好的叢集（Cluster）頁面，點擊叢集名稱右邊的「三的點點」，下拉式選單中有Enable Kerberos，進入後按照步驟填寫參數、輸入Kerberos管理員帳號密碼
 		![Kerberos](https://i.imgur.com/b6TtVQb.png)
 - #### 其他設置
 	 - #### Kerberos參數
@@ -166,9 +166,10 @@ systemctl enable kadmin.service
 		左欄Adminisration > Security，進到Security頁面點擊"Kerberos Credentials"
 		![path](https://i.imgur.com/IIb7goM.png)
 		 - #### 輸入Kerberos管理員帳號密碼
-			輸入「[[#建立Cloudera Manager的principal]]」的步驟中的
-			帳號密碼（markdown錨點有問題）
-			![account manager](https://i.imgur.com/5KV3MK4.png)
+			輸入「[[#建立Cloudera Manager的principal]]」的步驟中的帳號密碼
+			[建立Cloudera Manager的principal](#建立cloudera-manager的principal)（markdown錨點有問題）
+			![account manager-1](https://i.imgur.com/5KV3MK4.png)
+			![account manager-2](https://i.imgur.com/VsojgeC.png)
 		 - #### 製作缺漏的Kerberos Principal（Hadoop core system users, such as `hdfs`）
 			![principal](https://i.imgur.com/UbF7xlr.png)
 ### 為HDFS建立Superuser principal

@@ -16,63 +16,57 @@
 	 - Kerberos的realm一定要是大寫的，如`US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL`
 	 - 每行前面有無空白只是排版美觀，不會影響設定
 	```
+	[logging]
+	 default = FILE:/var/log/krb5libs.log
+	 kdc = FILE:/var/log/krb5kdc.log
+	 admin_server = FILE:/var/log/kadmind.log
+
 	[libdefaults]
-	default_realm = US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
-	dns_lookup_kdc = false
-	dns_lookup_realm = false
-	ticket_lifetime = 86400
-	renew_lifetime = 604800
-	forwardable = true
-	default_tgs_enctypes = aes256-cts-hmac-sha1-96
-	default_tkt_enctypes = aes256-cts-hmac-sha1-96
-	permitted_enctypes = aes256-cts-hmac-sha1-96
-	udp_preference_limit = 1
-	kdc_timeout = 3000
+	 dns_lookup_realm = false
+	 ticket_lifetime = 24h
+	 renew_lifetime = 7d
+	 forwardable = true
+	 rdns = false
+	 pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
+	 default_realm = US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
+	 default_ccache_name = KEYRING:persistent:%{uid}
 
 	[realms]
-	US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL = {
-	kdc = cfori-m1.us-central1-a.c.eternal-ruler-310501.internal
-	admin_server = cfori-m1.us-central1-a.c.eternal-ruler-310501.internal
-	}
+	 US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL = {
+		kdc = cfori-m1.us-central1-a.c.eternal-ruler-310501.internal
+		admin_server = cfori-m1.us-central1-a.c.eternal-ruler-310501.internal
+		}
 
 	[domain_realm]
-	.us-central1-a.c.eternal-ruler-310501.internal = US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
-	us-central1-a.c.eternal-ruler-310501.internal = US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
-
-	[logging]
-	kdc = FILE:/var/log/krb5kdc.log
-	admin_server = FILE:/var/log/kadmin.log
-	default = FILE:/var/log/krb5lib.log
 	```
 1. #### 設定`/var/kerberos/krb5kdc/kdc.conf`
 	```
 	default_realm = US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNA
 
 	[kdcdefaults]
-	v4_mode = nopreauth
-	kdc_ports = 0
+	 kdc_ports = 88
+	 kdc_tcp_ports = 88
 
 	[realms]
 	 US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL = {
-	  kdc_ports = 88
-	  admin_keytab = /etc/kadm5.keytab
 	  master_key_type = aes256-cts
-	  database_name = /var/kerberos/krb5kdc/principal
 	  acl_file = /var/kerberos/krb5kdc/kadm5.acl
+	  dict_file = /usr/share/dict/words
+	  admin_keytab = /var/kerberos/krb5kdc/kadm5.keytab
+	  supported_enctypes = aes256-cts:normal aes128-cts:normal des3-hmac-sha1:normal arcfour-hmac:normal camellia256-cts:normal camellia128-cts:normal des-hmac-sha1:normal des-cbc-md5:normal des-cbc-crc:normal
 	  max_life = 10h 0m 0s
 	  max_renewable_life = 7d 0h 0m 0s
-	  supported_enctypes = arcfour-hmac:normal des3-hmac-sha1:normal des-cbc-crc:normal des:normal des:v4 des:norealm des:onlyrealm des:afs3
-	  default_principal_flags = +preauth
+	  database_name = /var/kerberos/krb5kdc/principal
+	  default_principal_flags = +preauth, +renewable
 	 }
 	 ```
-
 1. #### 設定`/var/kerberos/krb5kdc/kadm5.acl`
 	```
 	*/admin@CW.COM	    *
 	```
 
 ### 安裝JCE POLICY
-CDP要求Kerberos要使用aes256加密，這的加密法需要另外下載
+CDP建議Kerberos使用aes256加密，這的加密法需要另外下載
 1. #### 下載jce_policy-8.zip
 	 - 需要登入ORACLE手動下載解壓縮，在傳到安裝Kerberos的主機
 	 	https://www.oracle.com/webapps/redirect/signon?nexturl=https://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip
@@ -150,7 +144,7 @@ systemctl enable kadmin.service
 		 - 勾選管控krb5.conf，其他參數基本上不用填寫或修改
 		![Step3](https://i.imgur.com/yFOnG8n.png)
 	1. #### Enter Account Credentials
-		輸入「[[#建立Cloudera Manager的principal]]」的步驟中的
+		輸入「[建立Cloudera Manager的principal](#建立cloudera-manager的principal)」的步驟中的
 		帳號密碼（markdown錨點有問題）
 		![Step4](https://i.imgur.com/Aw6CoJ3.png)
 	1. #### Command Details
@@ -166,8 +160,7 @@ systemctl enable kadmin.service
 		左欄Adminisration > Security，進到Security頁面點擊"Kerberos Credentials"
 		![path](https://i.imgur.com/IIb7goM.png)
 		 - #### 輸入Kerberos管理員帳號密碼
-			輸入「[[#建立Cloudera Manager的principal]]」的步驟中的帳號密碼
-			[建立Cloudera Manager的principal](#建立cloudera-manager的principal)（markdown錨點有問題）
+			輸入「[建立Cloudera Manager的principal](#建立cloudera-manager的principal)」的步驟中的帳號密碼
 			![account manager-1](https://i.imgur.com/5KV3MK4.png)
 			![account manager-2](https://i.imgur.com/VsojgeC.png)
 		 - #### 製作缺漏的Kerberos Principal（Hadoop core system users, such as `hdfs`）

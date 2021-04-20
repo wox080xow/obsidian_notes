@@ -6,7 +6,7 @@
       {
         "id": "645c5ffecdd27e4a",
         "type": "leaf",
-        "dimension": 41.08455882352941,
+        "dimension": 47.61029411764706,
         "state": {
           "type": "markdown",
           "state": {
@@ -18,11 +18,11 @@
       {
         "id": "f07cb8754e12dc1b",
         "type": "leaf",
-        "dimension": 58.91544117647059,
+        "dimension": 52.38970588235294,
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CDP/CDP Kerberos.md",
+            "file": "CDP/keberos_setup.md",
             "mode": "preview"
           }
         }
@@ -99,11 +99,11 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "f07cb8754e12dc1b",
+  "active": "645c5ffecdd27e4a",
   "lastOpenFiles": [
     "CDP/CDP Kerberos.md",
-    "First Try/LIMBO.md",
     "CDP/keberos_setup.md",
+    "First Try/LIMBO.md",
     "CDP/pictures/Screen Shot 2021-04-19 at 11.47.40.png",
     "CDP Kerberos.md",
     "keberos_setup.md",

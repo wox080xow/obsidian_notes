@@ -4,25 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "645c5ffecdd27e4a",
+        "id": "5f49f23e9e8a3625",
         "type": "leaf",
-        "dimension": 47.61029411764706,
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CDP/CDP Kerberos.md",
-            "mode": "source"
-          }
-        }
-      },
-      {
-        "id": "f07cb8754e12dc1b",
-        "type": "leaf",
-        "dimension": 52.38970588235294,
-        "state": {
-          "type": "markdown",
-          "state": {
-            "file": "CDP/keberos_setup.md",
+            "file": "CLOUDERA/Create Assests.md",
             "mode": "preview"
           }
         }
@@ -81,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CDP/CDP Kerberos.md",
+                "file": "CLOUDERA/Create Assests.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,17 +86,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "645c5ffecdd27e4a",
+  "active": "5f49f23e9e8a3625",
   "lastOpenFiles": [
+    "CLOUDERA/Create Assests.md",
     "CDP/CDP Kerberos.md",
+    "Untitled.md",
     "CDP/keberos_setup.md",
     "First Try/LIMBO.md",
     "CDP/pictures/Screen Shot 2021-04-19 at 11.47.40.png",
     "CDP Kerberos.md",
     "keberos_setup.md",
-    "Untitled.md",
     "First Try/First Try.md",
-    "First Try/Note Apps.md",
-    "First Try/mermaid Introduction.md"
+    "First Try/Note Apps.md"
   ]
 }

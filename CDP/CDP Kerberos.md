@@ -1,6 +1,12 @@
 
 
 # 一、[前置作業](#前置作業)
+### 安裝與設定Kerberos Server
+### 安裝JCE POLICY
+### 建立Kerberos的database，要記得自己設定的密碼！
+### 建立Kerberos的管理員principal
+### 啟動KDC(Key Distribution Center)
+### 安裝Kerberos Client
 # 二、[CDP啟用Kerberos](#cdp啟用kerberos)
 # 三、[事後整合確認](#事後整合確認)
 # 前置作業
@@ -77,7 +83,7 @@ CDP建議Kerberos使用aes256加密，這的加密法需要另外下載
 	cp local_policy.jar US_export_policy.jar $JAVA_HOME/lib/security
 	```
 
-### 建立Kerberos的database
+### 建立Kerberos的database，要記得自己設定的密碼！
 ```
 kdb5_util create -s
 ```
@@ -96,9 +102,9 @@ kdb5_util create -s
 	```
  ### 建立Cloudera Manager的principal
 - 密碼設定為cloudera-scm
-- @後面是Kerberos的realm
+- @後面是Kerberos的realm（設定在`/etc/krb5.conf`的`[realms]`）
 ```
-kadmin.local:  -pw cloudera-scm cloudera-scm/admin@US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
+kadmin.local:  addprinc -pw cloudera-scm cloudera-scm/admin@US-CENTRAL1-A.C.ETERNAL-RULER-310501.INTERNAL
 ```
 ### 啟動KDC(Key Distribution Center)
 接下來可以啟動KDC了！
@@ -112,6 +118,7 @@ systemctl enable kadmin.service
 ### 安裝Kerberos Client
 1. #### 安裝Kerberos Client
 	 - 叢集裡所有主機都要安裝
+	 - 已完成叢集間ssh無密碼登入，並製作hostlis（叢集各主機FQDN名單），可以使用下面指令
 	```
 	while read h;do ssh $h "hostname;yum -y install krb5-workstation krb5-libs" </dev/null;done < hostlist
 	```

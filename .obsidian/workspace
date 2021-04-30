@@ -4,13 +4,13 @@
     "type": "split",
     "children": [
       {
-        "id": "5f49f23e9e8a3625",
+        "id": "eba3f487f8fc0cf7",
         "type": "leaf",
         "state": {
           "type": "markdown",
           "state": {
             "file": "The Blind Watchmaker/大綱.md",
-            "mode": "source"
+            "mode": "preview"
           }
         }
       }
@@ -86,17 +86,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "5f49f23e9e8a3625",
+  "active": "eba3f487f8fc0cf7",
   "lastOpenFiles": [
-    "大綱.md",
+    "The Blind Watchmaker/大綱.md",
+    "The Blind Watchmaker/生物形biomorphs.md",
+    "The Blind Watchmaker/我就是不能相信！.md",
+    "The Blind Watchmaker/生業.md",
+    "The Blind Watchmaker/會下棋的電腦.md",
     "Untitled.md",
-    "CLOUDERA/Create Assests.md",
-    "CDP/CDP Kerberos.md",
     "CDP/keberos_setup.md",
-    "First Try/LIMBO.md",
-    "CDP/pictures/Screen Shot 2021-04-19 at 11.47.40.png",
-    "CDP Kerberos.md",
-    "keberos_setup.md",
-    "First Try/First Try.md"
+    "CDP/CDP Kerberos.md",
+    "CLOUDERA/Create Assests.md",
+    "大綱.md"
   ]
 }

@@ -9,8 +9,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CLOUDERA/Create Assests.md",
-            "mode": "preview"
+            "file": "The Blind Watchmaker/大綱.md",
+            "mode": "source"
           }
         }
       }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CLOUDERA/Create Assests.md",
+                "file": "The Blind Watchmaker/大綱.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,15 +88,15 @@
   },
   "active": "5f49f23e9e8a3625",
   "lastOpenFiles": [
+    "大綱.md",
+    "Untitled.md",
     "CLOUDERA/Create Assests.md",
     "CDP/CDP Kerberos.md",
-    "Untitled.md",
     "CDP/keberos_setup.md",
     "First Try/LIMBO.md",
     "CDP/pictures/Screen Shot 2021-04-19 at 11.47.40.png",
     "CDP Kerberos.md",
     "keberos_setup.md",
-    "First Try/First Try.md",
-    "First Try/Note Apps.md"
+    "First Try/First Try.md"
   ]
 }

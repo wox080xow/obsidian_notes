@@ -4,12 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "eba3f487f8fc0cf7",
+        "id": "194f8df750992e32",
         "type": "leaf",
         "state": {
           "type": "markdown",
           "state": {
-            "file": "The Blind Watchmaker/大綱.md",
+            "file": "CLOUDERA/Create Case regarding License.md",
             "mode": "preview"
           }
         }
@@ -52,7 +52,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 132
+    "width": 378
   },
   "right": {
     "id": "f00ff1417d74282b",
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "The Blind Watchmaker/大綱.md",
+                "file": "CLOUDERA/Create Case regarding License.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -86,17 +86,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "eba3f487f8fc0cf7",
+  "active": "194f8df750992e32",
   "lastOpenFiles": [
+    "Untitled.md",
+    "First Try/Link.md",
     "The Blind Watchmaker/大綱.md",
-    "The Blind Watchmaker/生物形biomorphs.md",
-    "The Blind Watchmaker/我就是不能相信！.md",
+    "無機礦物質理論.md",
+    "太古濃湯理論.md",
     "The Blind Watchmaker/生業.md",
     "The Blind Watchmaker/會下棋的電腦.md",
-    "Untitled.md",
-    "CDP/keberos_setup.md",
-    "CDP/CDP Kerberos.md",
-    "CLOUDERA/Create Assests.md",
-    "大綱.md"
+    "The Blind Watchmaker/生物形.md",
+    "The Blind Watchmaker/我就是不能相信！.md",
+    "First Try/pictures/LIMBO rainy day.jpeg"
   ]
 }

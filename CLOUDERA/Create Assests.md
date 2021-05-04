@@ -1,3 +1,4 @@
+# Create Assests
 ### Support > Assets > Create New Asset
 ![](https://i.imgur.com/pxLUWzu.png)
 ### Create asset manually

@@ -4,14 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "194f8df750992e32",
+        "id": "5535dd61c919e3e4",
         "type": "leaf",
         "state": {
-          "type": "markdown",
-          "state": {
-            "file": "CLOUDERA/Create Case regarding License.md",
-            "mode": "preview"
-          }
+          "type": "empty",
+          "state": {}
         }
       }
     ],
@@ -68,7 +65,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CLOUDERA/Create Case regarding License.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -86,8 +82,10 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "194f8df750992e32",
+  "active": "5535dd61c919e3e4",
   "lastOpenFiles": [
+    "CLOUDERA/Create Case regarding License.md",
+    "CLOUDERA/Create Assests.md",
     "Untitled.md",
     "First Try/Link.md",
     "The Blind Watchmaker/大綱.md",
@@ -95,8 +93,6 @@
     "太古濃湯理論.md",
     "The Blind Watchmaker/生業.md",
     "The Blind Watchmaker/會下棋的電腦.md",
-    "The Blind Watchmaker/生物形.md",
-    "The Blind Watchmaker/我就是不能相信！.md",
-    "First Try/pictures/LIMBO rainy day.jpeg"
+    "The Blind Watchmaker/生物形.md"
   ]
 }

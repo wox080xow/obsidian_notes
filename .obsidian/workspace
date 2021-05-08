@@ -4,11 +4,14 @@
     "type": "split",
     "children": [
       {
-        "id": "5535dd61c919e3e4",
+        "id": "caadaedbd75aaf00",
         "type": "leaf",
         "state": {
-          "type": "empty",
-          "state": {}
+          "type": "markdown",
+          "state": {
+            "file": "macOS/藍牙與音效輸出.md",
+            "mode": "source"
+          }
         }
       }
     ],
@@ -65,6 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "macOS/藍牙與音效輸出.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -82,17 +86,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "5535dd61c919e3e4",
+  "active": "caadaedbd75aaf00",
   "lastOpenFiles": [
+    "macOS/藍牙與音效輸出.md",
+    "macOS/糟糕的printf.md",
+    "Untitled.md",
+    "CDP/Isilon.md",
     "CLOUDERA/Create Case regarding License.md",
     "CLOUDERA/Create Assests.md",
-    "Untitled.md",
     "First Try/Link.md",
     "The Blind Watchmaker/大綱.md",
     "無機礦物質理論.md",
-    "太古濃湯理論.md",
-    "The Blind Watchmaker/生業.md",
-    "The Blind Watchmaker/會下棋的電腦.md",
-    "The Blind Watchmaker/生物形.md"
+    "太古濃湯理論.md"
   ]
 }

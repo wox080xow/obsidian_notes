@@ -790,10 +790,10 @@ wget --user {cloudera_user} --password {cloudera_password} https://archive.cloud
   wget http://ftp.twaren.net/Linux/CentOS/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
   ```
 - oracle JDK
-> 需要註冊ORACLE會員才能下載
+  > 需要註冊ORACLE會員才能下載
 - JDBC for PostgreSQL
-> 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
-> 參考：https://jdbc.postgresql.org/download.html
+  > 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
+  > 參考：https://jdbc.postgresql.org/download.html
   ```
   wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
   ```

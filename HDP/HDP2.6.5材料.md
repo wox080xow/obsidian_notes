@@ -12,3 +12,8 @@ t-repo-latest.noarch.rpm
   304  ./sshall.sh 'yum install -y java-1.8.0-openjdk-devel.x86_64'
   328  yum install -y ambari-server
 ```
+
+從FQDN改用IP
+```
+sed -i 's/malvin-hdp2-m1.example.com/172.16.1.61/g' /etc/yum.repos.d/*.repo
+```

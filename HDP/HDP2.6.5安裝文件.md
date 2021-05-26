@@ -1,18 +1,21 @@
-# [前情提要](#前情提要)
-# [設定SSH無密碼登入](#設定SSH無密碼登入)
-# [OS設定](#OS設定)
-# [建置NTP Server](#建置NTP_Server)
-# [建置Ambari外部資料庫](#建置Ambari外部資料庫)
-# [建置YUM Local Repository](#建置YUM_Local_Repository)
-# [安裝Ambari](#安裝Ambari)
-# [套件](#套件)
-# [檔案](#檔案)
+# [、前情提要](#前情提要)
+# [、設定SSH無密碼登入](#設定SSH無密碼登入)
+# [、OS設定](#OS設定)
+# [、建置NTP Server](#建置NTP_Server)
+# [、建置Ambari外部資料庫](#建置Ambari外部資料庫)
+# [、建置YUM Local Repository](#建置YUM_Local_Repository)
+# [、安裝Ambari](#安裝Ambari)
+# [、套件](#套件)
+# [、檔案](#檔案)
 > ### 變數:
 > - {password} 確認每台主機的root密碼一致
-> - {JDK_RPM_LOCATION} 事先下載的JDK
-> - {path_to_jdk} 作為$JAVA_HOME路徑
-> - {MASTER_01_FQDN} master 01的FQDN
-
+> - {path_to_jdk_rpm} 事先下載的JDK
+> - {path_to_jdk} JDK目錄作為$JAVA_HOME路徑
+> - {NTP_SERVER_FQDN} 就是master 01的FQDN
+> - {JDK_RPM_LOCATION} 自己下載的JDK RPM
+> - {REPO_SERVER_FQDN} 就是master 01的FQDN
+> - {cloudera_user} 有購買HDP License的CLOUDERA帳號
+> - {cloudera_password} 有購買HDP License的CLOUDERA密碼
 
 # 前情提要
 ### 基本資訊
@@ -324,7 +327,7 @@ sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/
 自己預備或使用open JDK皆可，擇一
 ```
 # 使用自己下載的RPM
-./sshall.sh 'yum install -y {JDK_RPM_LOCATION}'
+./sshall.sh 'yum install -y {path_to_jdk_rpm}'
 ```
 ```
 # 使用open JDK
@@ -349,9 +352,9 @@ vi /etc/profile
   PATH=$PATH:$HOME/.local/bin:$HOME/bin:$JAVA_HOME/bin
   export PATH
   ```
- - 例如：
+- 例如：
   ```
-  export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-1.el7_9.x86_6
+  export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-1.el7_9.x86_64
   PATH=$PATH:$HOME/.local/bin:$HOME/bin:$JAVA_HOME/bin
   export PATH
   ```
@@ -385,7 +388,7 @@ vi /etc/ntp.conf
 ```
 - 修改內容：註解預設用來校時的NTP Server，加上master 01的FQDN
   ```
-  server {MASTER_01_FQDN}
+  server {NTP_SERVER_FQDN}
   ```
 - 例如：
   ```
@@ -493,6 +496,148 @@ psql
   GRANT ALL PRIVILEGES ON DATABASE hive TO hive;
   \q
   ```
+回到root使用者！
+```
+exit
+```
+# 建置YUM Local Repository
+> 注意：如果需要透過外網安裝套件，建議此步驟挪至安裝Ambari前完成
+
+備份原本的YUM Repository
+```
+mkdir /etc/yum.repos.d/original_repos
+mv /etc/yum.repos.d/* /etc/yum.repos.d/original_repos
+```
+下載OS ISO
+```
+wget http://ftp.twaren.net/Linux/CentOS/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
+```
+創建掛載用的目錄
+```
+mkdir /cdrom
+```
+掛載
+```
+mount CentOS-7-x86_64-Minimal-2009.iso /cdrom 
+```
+確認有CentOS的gpgkey
+```
+ll /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+```
+修改`/etc/yum.repos.d/oslocal.repo`
+```
+vi /etc/yum.repos.d/oslocal.repo
+```
+- 修改內容：
+  ```
+  [oslocal]
+  name=oslocal
+  baseurl=file:///cdrom
+  enabled=1
+  gpgcheck=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+  ```
+安裝HTTP Server
+```
+yum install -y httpd
+```
+啟用
+```
+systemctl start httpd
+systemctl enable httpd
+```
+安裝YUM Repository小工具
+```
+yum installl -y yum-utils createrepo
+```
+將ISO中的RPM同步到HTTP Server
+```
+reposync -r /var/www/html/oslocal
+```
+將目錄改名
+```
+mv /var/www/html/oslocal/Packages /var/www/oslocal/RPMS
+```
+製作repodata
+```
+createrepo /var/www/html/oslocal/
+```
+修改`/etc/yum.repos.d/oslocal.repo`
+```
+vi /etc/yum.repos.d/oslocal.repo
+```
+- 修改內容：
+  ```
+  [oslocal]
+  name=oslocal
+  baseurl=http://{REPO_SERVER_FQDN}/oslocal
+  enabled=1
+  gpgcheck=0
+  ```
+
+下載Ambari與HDP的RPM
+```
+wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/ambari/2.x/2.6.2.59/centos7/ambari-2.6.2.59-7-centos7.tar.gz
+wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
+wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+```
+解壓縮至HTTP Server
+```
+tar xvf ambari-2.6.2.59-7-centos7.tar.gz -C /var/www/html/
+mkdir /var/www/html/hdp
+tar xvf HDP-2.6.5.0-centos7-rpm.tar.gz -C /var/www/html/hdp
+tar xvf HDP-UTILS-1.1.0.22-centos7.tar.gz -C /var/www/html/hdp
+```
+修改`/etc/yum.repos.d/ambari.repo`
+```
+vi /etc/yum.repos.d/ambari.repo
+```
+- 修改內容：
+  ```
+  [ambari-2.6.2.59]
+  name=ambari-2.6.2.59
+  baseurl=http://{REPO_SERVER_FQDN}/ambari/centos/2.6.2.59-7
+  enabled=1
+  gpgcheck=0
+  ```
+  
+修改`/etc/yum.repos.d/hdp.repo`
+```
+vi /etc/yum.repos.d/hdp.repo
+```
+- 修改內容：
+  ```
+  [HDP-2.6.5.0]
+  name=HDP-2.6.5.0
+  baseurl=http://{REPO_SERVER_FQDN}/hdp/HDP/centos7/2.6.5.0-292/
+  enabled=1
+  gpgcheck=0
+  
+  [HDP-UTILS-1.1.0.22]
+  name=HDP-UTILS-1.1.0.22
+  baseurl=http://{REPO_SERVER_FQDN}/hdp/HDP-UTILS/centos7/1.1.0.22/
+  enabled=1
+  gpgcheck=0
+  ```
+將修改後的repo送到每台主機
+```
+./scpall.sh /etc/yum.repos.d/oslocal.repo
+./scpall.sh /etc/yum.repos.d/ambari.repo
+./scpall.sh /etc/yum.repos.d/hdp.repo
+```
+# 安裝Ambari
+安裝
+```
+yum install -y ambari-server
+```
+下載JDBC
+```
+wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
+```
+使用JDBC串接PostgreSQL
+```
+ambari-server setup --jdbc-db=postgres --jdbc-driver=/root/postgresql-42.2.10.jar
+```
 匯入Ambari使用到的SCHEMA
 ```
 psql -U ambari
@@ -503,24 +648,64 @@ psql -U ambari
   \i /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql;
   \q
   ```
-# 建置YUM Local Repository
-> 注意：如果需要透過外網安裝套件，建議此步驟挪至安裝Ambari前完成
+  
+設定Ambari Server
 ```
-yum install -y httpd
+ambari-server setup
 ```
+Interactive介面，範例如下：
 ```
-yum install -y yum-utils createrepo
+Using python  /usr/bin/python
+Setup ambari-server
+Checking SELinux...
+SELinux status is 'disabled'
+Customize user account for ambari-server daemon [y/n] (n)? n
+Adjusting ambari-server permissions and ownership...
+Checking firewall status...
+Checking JDK...
+Do you want to change Oracle JDK [y/n] (n)? y
+[1] Oracle JDK 1.8 + Java Cryptography Extension (JCE) Policy Files 8
+[2] Oracle JDK 1.7 + Java Cryptography Extension (JCE) Policy Files 7
+[3] Custom JDK
+==============================================================================
+Enter choice (1): 3
+WARNING: JDK must be installed on all hosts and JAVA_HOME must be valid on all hosts.
+WARNING: JCE Policy files are required for configuring Kerberos security. If you plan to use Kerberos,please make sure JCE Unlimited Strength Jurisdiction Policy Files are valid on all hosts.
+Path to JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-1.el7_9.x86_64
+Validating JDK on Ambari Server...done.
+Checking GPL software agreement...
+Completing setup...
+Configuring database...
+Enter advanced database configuration [y/n] (n)? y
+Configuring database...
+==============================================================================
+Choose one of the following options:
+[1] - PostgreSQL (Embedded)
+[2] - Oracle
+[3] - MySQL / MariaDB
+[4] - PostgreSQL
+[5] - Microsoft SQL Server (Tech Preview)
+[6] - SQL Anywhere
+[7] - BDB
+==============================================================================
+Enter choice (4): 4
+Hostname (malvin-hdp2-m1): malvin-hdp2-m1.example.com
+Port (5432): 5432
+Database name (ambari): ambari
+Postgres schema (ambari): ambari
+Username (ambari): ambari
+Enter Database Password (ambari):
+Configuring ambari database...
+Configuring remote database connection properties...
+WARNING: Before starting Ambari Server, you must run the following DDL against the database to create the schema: /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql
+Proceed with configuring remote database connection properties [y/n] (y)? y
+Extracting system views...
+............
+Adjusting ambari-server permissions and ownership...
+Ambari Server 'setup' completed successfully.
 ```
-從FQDN改用IP
-```
-sed -i 's/malvin-hdp2-m1.example.com/172.16.1.61/g' /etc/yum.repos.d/*.repo
-```
-# 安裝Ambari
-```
-yum install -y ambari-server
-```
-
 # 套件
+> 注意：如果是內網不能連外的環境，應事先下載與OS相容的套件RPM，避免安裝過程中還要花時間找套件
 ## 必要套件
 - ntp
   ```
@@ -544,8 +729,9 @@ yum install -y ambari-server
     yum install -y java-1.8.0-openjdk-devel.x86_64
     ```
   - oracle JDK
+> 注意：需要事先下載JDK的RPM
     ```
-    yum install -y
+    yum install -y {path_to_jdk_rpm}
     ```
 - 外部database，以PostgreSQL9.6為例
   ```
@@ -553,10 +739,11 @@ yum install -y ambari-server
   yum install -y postgresql96-server
   ```
 - Ambari
+> 注意：需要事先建置Local Repository
   ```
   yum install -y ambari-server
   ```
-  > 注意：需要建置Local Repository
+ 
 ## 方便工具
 - ansible
   ```
@@ -583,9 +770,14 @@ yum install -y ambari-server
   yum install -y tree
   ```
 # 檔案
+> 可以事先下載需要的檔案，加快安裝速度
 ### 必要檔案
 - Ambari 2.6.2.59 RPMs
 - HDP 2.6.5 RPMs
+```
+wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
+wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+```
 > 以上都需要購買HDP License才能下載
 ### 選用檔案
 - OS ISO，以CentOS 7.9 Minimal為例
@@ -595,8 +787,8 @@ yum install -y ambari-server
 - oracle JDK
 > 需要註冊ORACLE會員才能下載
 - JDBC for PostgreSQL
+> 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
+> 參考：https://jdbc.postgresql.org/download.html
   ```
   wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
   ```
-> 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
-> 可以參考：https://jdbc.postgresql.org/download.html

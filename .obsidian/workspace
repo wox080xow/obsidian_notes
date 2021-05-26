@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "HDP/HDP2.6.5安裝文件.md",
+            "file": "CLOUDERA/Create Assests.md",
             "mode": "preview"
           }
         }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "HDP/HDP2.6.5安裝文件.md",
+                "file": "CLOUDERA/Create Assests.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,6 +88,7 @@
   },
   "active": "a1a293bf5342657e",
   "lastOpenFiles": [
+    "CLOUDERA/Create Assests.md",
     "HDP/HDP2.6.5安裝文件.md",
     "lh5.googleusercontent.com/Aw8uqaSVNmyQJE8swUOzDHUckbg6wP8XpAZ-oQzwrfO8-Tmy2FxGVZ1DWIZVP9h-mEc=w1200-h630-p.md",
     "HDP/HDP2.6.5材料.md",
@@ -96,7 +97,6 @@
     "Linux運行維護實作大全/大綱.md",
     "Untitled.md",
     "HDP2.6.5安裝.md",
-    "Linux運行維護實作大全/Untitled.md",
-    "macOS/藍牙與音效輸出.md"
+    "Linux運行維護實作大全/Untitled.md"
   ]
 }

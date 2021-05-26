@@ -1,29 +1,57 @@
+# [前情提要](#前情提要)
+# [設定SSH無密碼登入](#設定SSH無密碼登入)
+# [OS設定](#OS設定)
+# [建置NTP Server](#建置NTP_Server)
+# [建置Ambari外部資料庫](#建置Ambari外部資料庫)
+# [建置YUM Local Repository](#建置YUM_Local_Repository)
+# [安裝Ambari](#安裝Ambari)
+# [套件](#套件)
+# [檔案](#檔案)
 > ### 變數:
 > - {password} 確認每台主機的root密碼一致
 > - {JDK_RPM_LOCATION} 事先下載的JDK
-> - {path_to_jdk}作為$JAVA_HOME路徑
-> 
+> - {path_to_jdk} 作為$JAVA_HOME路徑
+> - {MASTER_01_FQDN} master 01的FQDN
 
 
 # 前情提要
+### 基本資訊
 4 VMs on ESXi
+CentOS7.9(CentOS-7-x86_64-Minimal-2009.iso)
 
 |node|FQDN|IP|
 |-|-|-|
-|master|malvin-hdp2-m1.example.com|172.16.1.61|
-|master|malvin-hdp2-m2.example.com|172.16.1.62|
-|worker|malvin-hdp2-s1.example.com|172.16.1.63|
-|worker|malvin-hdp2-s2.example.com|172.16.1.64|
+|master 01|malvin-hdp2-m1.example.com|172.16.1.61|
+|master 02|malvin-hdp2-m2.example.com|172.16.1.62|
+|worker 01|malvin-hdp2-s1.example.com|172.16.1.63|
+|worker 02|malvin-hdp2-s2.example.com|172.16.1.64|
 
-# SSH無密碼登入
-### *每台VM*設定hostnam與IP
+
+### *每台VM*設定hostname與IP
+修改hostname
 ```
 hostnamectl set-hostname malvin-hdp2-m1
-hostname
-vi /etc/sysconfig/network-scripts/ifcfg-ens192
-ip addr
-reboot
 ```
+確認
+```
+hostname
+```
+修改IP
+```
+vi /etc/sysconfig/network-scripts/ifcfg-ens192
+```
+確認
+```
+ip addr
+```
+重啟後再確認一次
+```
+reboot
+hostname
+ip addr
+```
+> 注意：以下均使用*master 01*進行設定
+# 設定SSH無密碼登入
 ### 手寫填入個台主機的IP
 ```
 vi iplist
@@ -91,7 +119,7 @@ sed -i "s/PermitRootLogin no/PermitRootLogin yes/; s/PubkeyAuthentication yes/Pu
 # 手動
 vi /etc/ssh/ssh_config
 ```
- - 修改內容：
+- 修改內容：
   ```
   Host *
   StrictHostKeyChecking no
@@ -111,32 +139,32 @@ service sshd restart
 ```
 vi sshall.sh
 ```
-內容：
-```
-while read h
-do
-  #echo $h
-  #echo $1
-  ssh $h "hostname;$1" </dev/null
-  #sshpass -p asdf1234 ssh $h "hostname;$1" </dev/null
-done <hostlist
-#done <iplist
-```
+- 內容：
+  ```
+  while read h
+  do
+    #echo $h
+    #echo $1
+    ssh $h "hostname;$1" </dev/null
+    #sshpass -p asdf1234 ssh $h "hostname;$1" </dev/null
+  done <hostlist
+  #done <iplist
+  ```
 ### scp到所有主機的腳本
 ```
 vi scpall.sh
 ```
-內容：
-```
-while read h
-do
-  ssh $h hostname </dev/null
-  #sshpass -p asdf1234 ssh $h hostname </dev/null
-  scp $1 $h:$1 </dev/null
-  #sshpass -p asdf1234 scp $1 $h:$1 </dev/null
-done <hostlist
-#done <iplist
-```
+- 內容：
+  ```
+  while read h
+  do
+    ssh $h hostname </dev/null
+    #sshpass -p asdf1234 ssh $h hostname </dev/null
+    scp $1 $h:$1 </dev/null
+    #sshpass -p asdf1234 scp $1 $h:$1 </dev/null
+  done <hostlist
+  #done <iplist
+  ```
 > 可以再優化：一次傳送多份檔案
 ### ping測試
 ```
@@ -184,7 +212,12 @@ chmod a+x allhost_ssh.sh
 # 手動
 vi /etc/profile
 ```
-
+- 修改內容：在檔尾加上指定語言為 `en_US.UTF-8`
+  ```
+  export LANGUAGE=en_US.UTF-8
+  export LANG=en_US.UTF-8
+  export LC_ALL=en_US.UTF-8
+  ```
 ```
 ./scpall.sh /etc/profile
 ```
@@ -193,6 +226,7 @@ vi /etc/profile
 # 自動
 ./sshall.sh 'echo -e "export LANGUAGE=en_US.UTF-8\nexport LANG=en_US.UTF-8\nexport LC_ALL=en_US.UTF-8" >>/etc/profile'
 ```
+source一下`/etc/profile`
 ```
 ./sshall.sh 'source /etc/profile'
 ```
@@ -201,10 +235,16 @@ vi /etc/profile
 ./sshall.sh 'locale'
 ```
 ### 停用SELinux
-> 注意：此設定需在後面步驟reboot確認是否生效
+> 注意：此設定須在reboot後確認是否生效
 ```
 # 手動
 vi /etc/sysconfig/selinux
+```
+- 修改內容：將`SELINUX`改為`disabled`
+  ```
+  SELINUX=disabled
+  ```
+```
 ./scpall.sh /etc/sysconfig/selinux
 ```
 ```
@@ -267,7 +307,7 @@ vi /etc/netconfig
 ```
 sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness
 ```
-### 停用 transparent_hugepage
+### 停用transparent_hugepage
 停用
 ```
 ./sshall.sh 'echo never > /sys/kernel/mm/transparent_hugepage/defrag; echo never > /sys/kernel/mm/transparent_hugepage/enabled'
@@ -276,7 +316,7 @@ sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/
 ```
 ./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
 ```
-永久停用
+設定「重啟後停用」
 ```
 ./sshall.sh 'echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local; tail -n 2 /etc/rc.d/rc.local'
 ```
@@ -327,12 +367,83 @@ vi /etc/profile
 ./sshall.sh 'echo $JAVA_HOME'
 ```
 # 建置NTP Server
-# 建置外部Database
+停用chronyd
+```
+systemctl stop chronyd; systemctl disable chronyd
+```
+確認
+```
+systemctl is-active chronyd; systemctl is-enabled chronyd
+```
+安裝NTP Server
+```
+yum install -y ntp
+```
+修改`/etc/ntp.conf`
+```
+vi /etc/ntp.conf
+```
+- 修改內容：註解預設用來校時的NTP Server，加上master 01的FQDN
+  ```
+  server {MASTER_01_FQDN}
+  ```
+- 例如：
+  ```
+  #server 0.centos.pool.ntp.org iburst
+  #server 1.centos.pool.ntp.org iburst
+  #server 2.centos.pool.ntp.org iburst
+  #server 3.centos.pool.ntp.org iburst
+  server malvin-hdp2-m1.example.com
+  ```
+傳送給每台VM
+```
+./scpall.sh /etc/ntp.conf
+```
+再一次修改`/etc/ntp.conf`
+```
+vi /etc/ntp.conf
+```
+- 修改內容：註解預設用來校時的NTP Server，改用本機的NTP Server校時
+  ```
+  restrict 10.128.0.0 mask 255.255.255.0 nomodify notrap
+  #server 0.centos.pool.ntp.org iburst
+  #server 1.centos.pool.ntp.org iburst
+  #server 2.centos.pool.ntp.org iburst
+  #server 3.centos.pool.ntp.org iburst
+  server 127.127.1.0
+  fudge 127.127.1.0 stratum 8
+  ```
+
+啟用
+```
+./sshall.sh 'systemctl restart ntpd; systemctl enable ntpd'
+```
+確認
+```
+./sshall.sh 'systemctl is-active ntpd; systemctl is-enabled ntpd'
+```
+確認校時狀況
+```
+./sshall.sh 'ntpstat'
+```
+> 通常需要稍待一下才會開始校時
+# 建置Ambari外部資料庫
 > 注意：不同版本的PostgreSQL其套件名稱、服務名稱與設定檔的路徑各不相同，設定前需要確認清楚
+
+下載Postgres的YUM遠端倉庫清單
 ```
 yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+```
+安裝PostgreSQL9.6
+```
 yum install -y postgresql96-server
+```
+初始化
+```
 /usr/pgsql-9.6/bin/postgresql96-setup initdb
+```
+啟用
+```
 systemctl enable postgresql-9.6
 systemctl start postgresql-9.6
 ```
@@ -348,6 +459,7 @@ vi /var/lib/pgsql/9.6/data/pg_hba.conf
   # IPv4 connections:
   host    all             all             0.0.0.0/0               md5
   ```
+
 修改`/var/lib/pgsql/9.6/data/postgresql.conf`
 ```
 vi /var/lib/pgsql/9.6/data/postgresql.conf
@@ -356,6 +468,7 @@ vi /var/lib/pgsql/9.6/data/postgresql.conf
   ```
   listen_addresses = '*'
   ```
+
 重啟PostgresSQL
 ```
 systemctl restart postgresql-9.6
@@ -380,7 +493,6 @@ psql
   GRANT ALL PRIVILEGES ON DATABASE hive TO hive;
   \q
   ```
-
 匯入Ambari使用到的SCHEMA
 ```
 psql -U ambari
@@ -422,24 +534,25 @@ yum install -y ambari-server
   ```
   yum install -y createrepo
   ```
-- httpd
+- HTTP Server
   ```
   yum install -y httpd
   ```
-- java-1.8.0-openjdk-devel.x86_64
-  ```
-  yum install -y java-1.8.0-openjdk-devel.x86_64
-  ```
-- oracle JDK
-  ```
-  yum install -y
-  ```
-- postgresql96-server
+- open JDK與oracle JDK擇一
+  - java-1.8.0-openjdk-devel.x86_64
+    ```
+    yum install -y java-1.8.0-openjdk-devel.x86_64
+    ```
+  - oracle JDK
+    ```
+    yum install -y
+    ```
+- 外部database，以PostgreSQL9.6為例
   ```
   yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   yum install -y postgresql96-server
   ```
-- ambari-server
+- Ambari
   ```
   yum install -y ambari-server
   ```
@@ -469,24 +582,21 @@ yum install -y ambari-server
   ```
   yum install -y tree
   ```
-```
-   37  yum -y install ansible
-   46  yum -y install sshpass
-  113  yum -y install wget
-  122  yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redha
-t-repo-latest.noarch.rpm
-  123  yum install -y postgresql96-server
-  156  ./sshall.sh 'yum -y install ntp'
-  214  yum install -y yum-utils createrepo
-  215  yum install httpd
-  301  yum install java-1.8.0-openjdk-devel.x86_64
-  304  ./sshall.sh 'yum install -y java-1.8.0-openjdk-devel.x86_64'
-  328  yum install -y ambari-server
-```
-
 # 檔案
-- postgresql-42.2.20.jar
+### 必要檔案
+- Ambari 2.6.2.59 RPMs
+- HDP 2.6.5 RPMs
+> 以上都需要購買HDP License才能下載
+### 選用檔案
+- OS ISO，以CentOS 7.9 Minimal為例
+  ```
+  wget http://ftp.twaren.net/Linux/CentOS/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
+  ```
+- oracle JDK
+> 需要註冊ORACLE會員才能下載
+- JDBC for PostgreSQL
   ```
   wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
   ```
-https://jdbc.postgresql.org/download.html
+> 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
+> 可以參考：https://jdbc.postgresql.org/download.html

@@ -4,12 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "caadaedbd75aaf00",
+        "id": "a1a293bf5342657e",
         "type": "leaf",
         "state": {
           "type": "markdown",
           "state": {
-            "file": "macOS/藍牙與音效輸出.md",
+            "file": "HDP/HDP2.6.5安裝文件.md",
             "mode": "source"
           }
         }
@@ -39,7 +39,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#建置NTP Server",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -48,11 +48,12 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
-    "width": 378
+    "width": 208
   },
   "right": {
     "id": "f00ff1417d74282b",
@@ -68,7 +69,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "macOS/藍牙與音效輸出.md",
+                "file": "HDP/HDP2.6.5安裝文件.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -86,17 +87,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "caadaedbd75aaf00",
+  "active": "a1a293bf5342657e",
   "lastOpenFiles": [
-    "macOS/藍牙與音效輸出.md",
-    "macOS/糟糕的printf.md",
-    "Untitled.md",
-    "CDP/Isilon.md",
-    "CLOUDERA/Create Case regarding License.md",
-    "CLOUDERA/Create Assests.md",
-    "First Try/Link.md",
+    "HDP/HDP2.6.5安裝文件.md",
     "The Blind Watchmaker/大綱.md",
-    "無機礦物質理論.md",
-    "太古濃湯理論.md"
+    "First Try/Link.md",
+    "lh5.googleusercontent.com/Aw8uqaSVNmyQJE8swUOzDHUckbg6wP8XpAZ-oQzwrfO8-Tmy2FxGVZ1DWIZVP9h-mEc=w1200-h630-p.md",
+    "Linux運行維護實作大全/大綱.md",
+    "Untitled.md",
+    "HDP2.6.5安裝.md",
+    "Linux運行維護實作大全/Untitled.md",
+    "macOS/藍牙與音效輸出.md",
+    "macOS/糟糕的printf.md"
   ]
 }

@@ -1,12 +1,12 @@
-# [、前情提要](#前情提要)
-# [、設定SSH無密碼登入](#設定SSH無密碼登入)
-# [、OS設定](#OS設定)
-# [、建置NTP Server](#建置NTP_Server)
-# [、建置Ambari外部資料庫](#建置Ambari外部資料庫)
-# [、建置YUM Local Repository](#建置YUM_Local_Repository)
-# [、安裝Ambari](#安裝Ambari)
-# [、套件](#套件)
-# [、檔案](#檔案)
+# 、[前情提要](#前情提要)
+# 、[設定SSH無密碼登入](#設定ssh無密碼登入)
+# 、[OS設定](#os設定)
+# 、[建置NTP Server](#建置ntp_server)
+# 、[建置Ambari外部資料庫](#建置ambari外部資料庫)
+# 、[建置YUM Local Repository](#建置yum_local_repository)
+# 、[安裝Ambari](#安裝ambari)
+# 、[套件](#套件)
+# 、[檔案](#檔案)
 > ### 變數:
 > - {password} 確認每台主機的root密碼一致
 > - {path_to_jdk_rpm} 事先下載的JDK

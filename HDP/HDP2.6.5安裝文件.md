@@ -734,7 +734,7 @@ ambari-server start
     yum install -y java-1.8.0-openjdk-devel.x86_64
     ```
   - oracle JDK
-> 注意：需要事先下載JDK的RPM
+    > 注意：需要事先下載JDK的RPM
     ```
     yum install -y {path_to_jdk_rpm}
     ```
@@ -744,7 +744,7 @@ ambari-server start
   yum install -y postgresql96-server
   ```
 - Ambari
-> 注意：需要事先建置Local Repository
+  > 注意：需要事先建置Local Repository
   ```
   yum install -y ambari-server
   ```
@@ -779,11 +779,11 @@ ambari-server start
 ### 必要檔案
 - Ambari 2.6.2.59 RPMs
 - HDP 2.6.5 RPMs
-```
-wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
-wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
-```
-> 以上都需要購買HDP License才能下載
+  ```
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+  ```
+  > 需要有購買HDP License的CLOUDERA帳戶才能下載
 ### 選用檔案
 - OS ISO，以CentOS 7.9 Minimal為例
   ```

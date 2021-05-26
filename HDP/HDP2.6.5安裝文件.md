@@ -1,12 +1,12 @@
-# 、[前情提要](#前情提要)
-# 、[設定SSH無密碼登入](#設定ssh無密碼登入)
-# 、[OS設定](#os設定)
-# 、[建置NTP Server](#建置ntp_server)
-# 、[建置Ambari外部資料庫](#建置ambari外部資料庫)
-# 、[建置YUM Local Repository](#建置yum_local_repository)
-# 、[安裝Ambari](#安裝ambari)
-# 、[套件](#套件)
-# 、[檔案](#檔案)
+# 一、[前情提要](#前情提要)
+# 二、[設定SSH無密碼登入](#設定ssh無密碼登入)
+# 三、[OS設定](#os設定)
+# 四、[建置NTP Server](#建置ntp_server)
+# 五、[建置Ambari外部資料庫](#建置ambari外部資料庫)
+# 六、[建置YUM Local Repository](#建置yum_local_repository)
+# 七、[安裝Ambari](#安裝ambari)
+# 附錄、[套件](#套件)
+# 附錄、[檔案](#檔案)
 > ### 變數:
 > - {password} 確認每台主機的root密碼一致
 > - {path_to_jdk_rpm} 事先下載的JDK
@@ -704,6 +704,11 @@ Extracting system views...
 Adjusting ambari-server permissions and ownership...
 Ambari Server 'setup' completed successfully.
 ```
+啟動
+```
+ambari-server start
+```
+> 成功啟動後，趕快用瀏覽器查看`http://{MASTER_01_FQDN}:8080`，確認Ambari可不可以正常使用，並用預設的帳號admin與密碼admin登入吧！
 # 套件
 > 注意：如果是內網不能連外的環境，應事先下載與OS相容的套件RPM，避免安裝過程中還要花時間找套件
 ## 必要套件

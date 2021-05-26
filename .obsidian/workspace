@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CLOUDERA/Create Assests.md",
+            "file": "HDP/HDP2.6.5安裝文件.md",
             "mode": "preview"
           }
         }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CLOUDERA/Create Assests.md",
+                "file": "HDP/HDP2.6.5安裝文件.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,8 +88,8 @@
   },
   "active": "a1a293bf5342657e",
   "lastOpenFiles": [
-    "CLOUDERA/Create Assests.md",
     "HDP/HDP2.6.5安裝文件.md",
+    "CLOUDERA/Create Assests.md",
     "lh5.googleusercontent.com/Aw8uqaSVNmyQJE8swUOzDHUckbg6wP8XpAZ-oQzwrfO8-Tmy2FxGVZ1DWIZVP9h-mEc=w1200-h630-p.md",
     "HDP/HDP2.6.5材料.md",
     "The Blind Watchmaker/大綱.md",

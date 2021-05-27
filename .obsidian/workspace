@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "HDP/HDP2.6.5安裝文件.md",
+            "file": "HDP/HDP2.6.5材料.md",
             "mode": "source"
           }
         }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "HDP/HDP2.6.5安裝文件.md",
+                "file": "HDP/HDP2.6.5材料.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,15 +88,15 @@
   },
   "active": "a1a293bf5342657e",
   "lastOpenFiles": [
+    "HDP/HDP2.6.5材料.md",
+    "HDP/HDP_2.6.5_Installation.md",
+    "CDP/Isilon.md",
+    "CDP/CDP Kerberos.md",
     "HDP/HDP2.6.5安裝文件.md",
+    "CDP/keberos_setup.md",
+    "CLOUDERA/Create Case regarding License.md",
     "CLOUDERA/Create Assests.md",
     "lh5.googleusercontent.com/Aw8uqaSVNmyQJE8swUOzDHUckbg6wP8XpAZ-oQzwrfO8-Tmy2FxGVZ1DWIZVP9h-mEc=w1200-h630-p.md",
-    "HDP/HDP2.6.5材料.md",
-    "The Blind Watchmaker/大綱.md",
-    "First Try/Link.md",
-    "Linux運行維護實作大全/大綱.md",
-    "Untitled.md",
-    "HDP2.6.5安裝.md",
-    "Linux運行維護實作大全/Untitled.md"
+    "The Blind Watchmaker/大綱.md"
   ]
 }

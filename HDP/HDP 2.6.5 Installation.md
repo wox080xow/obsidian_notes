@@ -711,6 +711,8 @@ ambari-server start
 > 成功啟動後，趕快用瀏覽器查看`http://{MASTER_01_FQDN}:8080`，確認Ambari可不可以正常使用，並用預設的帳號admin與密碼admin登入吧！
 # 套件
 > 注意：如果是內網不能連外的環境，應事先下載與OS相容的套件RPM，避免安裝過程中還要花時間找套件
+
+> \*標記為`CentOS-7-x86_64-Everything-2009.iso`沒有的RPM
 ## 必要套件
 - ntp
   ```
@@ -733,28 +735,28 @@ ambari-server start
     ```
     yum install -y java-1.8.0-openjdk-devel.x86_64
     ```
-  - oracle JDK
+  - oracle JDK*
     > 注意：需要事先下載JDK的RPM
     ```
     yum install -y {path_to_jdk_rpm}
     ```
-- 外部database，以PostgreSQL9.6為例
+- 外部database，以PostgreSQL9.6為例*
   ```
   yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   yum install -y postgresql96-server
   ```
-- Ambari
+- Ambari*
   > 注意：需要事先建置Local Repository
   ```
   yum install -y ambari-server
   ```
  
 ## 方便工具
-- ansible
+- ansible*
   ```
   yum install -y ansible
   ```
-- sshpass
+- sshpass*
   ```
   yum install -y sshpass
   ```
@@ -765,6 +767,10 @@ ambari-server start
 - lsof
   ```
   yum install -y lsof
+  ```
+- telnet
+  ```
+  yum install -y telnet
   ```
 - pstree
   ```

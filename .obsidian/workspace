@@ -4,13 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "a1a293bf5342657e",
+        "id": "f5345adc1295273d",
         "type": "leaf",
         "state": {
           "type": "markdown",
           "state": {
-            "file": "HDP/HDP2.6.5材料.md",
+            "file": "CDP/Moving CM to New Host.md",
             "mode": "source"
+          }
+        }
+      },
+      {
+        "id": "0c9563ec49f700c7",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "HDP/HDP 2.6.5 Installation.md",
+            "mode": "preview"
           }
         }
       }
@@ -52,7 +63,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 208
+    "width": 208,
+    "collapsed": true
   },
   "right": {
     "id": "f00ff1417d74282b",
@@ -68,7 +80,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "HDP/HDP2.6.5材料.md",
+                "file": "CDP/Moving CM to New Host.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -86,17 +98,17 @@
     "width": 300,
     "collapsed": true
   },
-  "active": "a1a293bf5342657e",
+  "active": "f5345adc1295273d",
   "lastOpenFiles": [
+    "CDP/Moving CM to New Host.md",
+    "CDP/CDP Kerberos.md",
+    "CDP/Untitled.md",
+    "HDP/HDP 2.6.5 Installation.md",
+    "Untitled.md",
+    "HDP/HDP 2.6.5 material.md",
     "HDP/HDP2.6.5材料.md",
     "HDP/HDP_2.6.5_Installation.md",
     "CDP/Isilon.md",
-    "CDP/CDP Kerberos.md",
-    "HDP/HDP2.6.5安裝文件.md",
-    "CDP/keberos_setup.md",
-    "CLOUDERA/Create Case regarding License.md",
-    "CLOUDERA/Create Assests.md",
-    "lh5.googleusercontent.com/Aw8uqaSVNmyQJE8swUOzDHUckbg6wP8XpAZ-oQzwrfO8-Tmy2FxGVZ1DWIZVP9h-mEc=w1200-h630-p.md",
-    "The Blind Watchmaker/大綱.md"
+    "HDP/HDP2.6.5安裝文件.md"
   ]
 }

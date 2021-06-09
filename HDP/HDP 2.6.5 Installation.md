@@ -636,7 +636,7 @@ wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
 ```
 使用JDBC串接PostgreSQL
 ```
-ambari-server setup --jdbc-db=postgres --jdbc-driver=/root/postgresql-42.2.10.jar
+ambari-server setup --jdbc-db=postgres --jdbc-driver=/root/postgresql-42.2.20.jar
 ```
 匯入Ambari使用到的SCHEMA
 ```

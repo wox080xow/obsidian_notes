@@ -1,12 +1,3 @@
-# 一、[前情提要](#前情提要)
-# 二、[設定SSH無密碼登入](#設定ssh無密碼登入)
-# 三、[OS設定](#os設定)
-# 四、[建置NTP Server](#建置ntp-server)
-# 五、[建置Ambari外部資料庫](#建置ambari外部資料庫)
-# 六、[建置YUM Local Repository](#建置yum-local-repository)
-# 七、[安裝Ambari](#安裝ambari)
-# 附錄、[套件](#套件)
-# 附錄、[檔案](#檔案)
 > ### 變數:
 > - {password} 確認每台主機的root密碼一致
 > - {path_to_jdk_rpm} 事先下載的JDK
@@ -19,43 +10,23 @@
 
 # 前情提要
 ### 基本資訊
-4 VMs on ESXi
-CentOS7.9(CentOS-7-x86_64-Minimal-2009.iso)
+3 VMs
+CentOS7.6
 
-|node|FQDN|IP|
-|-|-|-|
-|master 01|malvin-hdp2-m1.example.com|172.16.1.61|
-|master 02|malvin-hdp2-m2.example.com|172.16.1.62|
-|worker 01|malvin-hdp2-s1.example.com|172.16.1.63|
-|worker 02|malvin-hdp2-s2.example.com|172.16.1.64|
+|node|FQDN|IP|core|memory|
+|-|-|-|-|-|
+|?|?|?|8|64G|
+|?|?|?|8|16G|
+|?|?|?|8|16G|
 
-
-### *每台VM*設定hostname與IP
-修改hostname
+Meso建議先Master兼職Worker
+# Linux 作業系統參數設定
+### *每台主機*改成相同密碼
 ```
-hostnamectl set-hostname malvin-hdp2-m1
+passwd
 ```
-確認
-```
-hostname
-```
-修改IP
-```
-vi /etc/sysconfig/network-scripts/ifcfg-ens192
-```
-確認
-```
-ip addr
-```
-重啟後再確認一次
-```
-reboot
-hostname
-ip addr
-```
-> 注意：以下均使用*master 01*進行設定
-# 設定SSH無密碼登入
-### 手寫填入個台主機的IP
+## 設定SSH無密碼登入
+### 手寫填入每台主機的IP
 ```
 vi iplist
 ```
@@ -88,11 +59,6 @@ hostname -f
 ```
 yum install -y sshpass
 ```
-> 這有bug...
-> ```
-> while read h;do sshpass -p {password} ssh $h echo "$(hostname -i) $(hostname -f) $(hostname)" </dev/null; done < iplist
-> ```
-> ![](https://i.imgur.com/psk5Wxu.png)
 ### 製作每台主機的ssh金鑰，並將ssh公鑰發到每台主機
 ```
 while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N''" </dev/null; done <hostlist
@@ -119,7 +85,6 @@ sed -i "s/PermitRootLogin no/PermitRootLogin yes/; s/PubkeyAuthentication yes/Pu
 ```
 修改`/etc/ssh/ssh_config`
 ```
-# 手動
 vi /etc/ssh/ssh_config
 ```
 - 修改內容：
@@ -127,14 +92,6 @@ vi /etc/ssh/ssh_config
   Host *
   StrictHostKeyChecking no
   ```
-
-```
-# 自動
-sed -i 's/# Host */Host */; s/#   StrictHostKeyChecking ask/  StrictHostKeyChecking no/' /etc/ssh/ssh_config
-```
-> 可以再優化：
->  - 抓關鍵字
->  - 針對不符合預期設定的關鍵字整行修改
 ```
 service sshd restart
 ```
@@ -207,7 +164,7 @@ chmod a+x allhost_ssh.sh
 ./scpall.sh allhost_ssh.sh
 ./sshall.sh 'sh allhost_ssh.sh'
 ```
-# OS設定
+## OS設定
 ### 設定語言
 手自動皆可，擇一進行
 
@@ -224,7 +181,6 @@ vi /etc/profile
 ```
 ./scpall.sh /etc/profile
 ```
-
 ```
 # 自動
 ./sshall.sh 'echo -e "export LANGUAGE=en_US.UTF-8\nexport LANG=en_US.UTF-8\nexport LC_ALL=en_US.UTF-8" >>/etc/profile'
@@ -292,15 +248,6 @@ vi /etc/netconfig
 ```
 ./scpall.sh /etc/netconfig
 ```
-> 注意：若需要從外網安裝套件，有些OS預設使用IPv6辨認DNS Server，所以需要修改`/etc/resolv.conf`
->  ```
->  vi /etc/resolv.conf
->  ```
->  - 修改內容：加上Google的DNS Server
->    ```
->    nameserver 8.8.8.8
->    nameserver 8.8.4.4
->    ```
 ### 修改vm.swappiness為1
 按照官方建議值，將Linux Kernal Parameter`vm.swappiness`調降為`1`
 ```
@@ -324,14 +271,18 @@ sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/
 ./sshall.sh 'echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local; tail -n 2 /etc/rc.d/rc.local'
 ```
 ### 安裝JDK8
-自己預備或使用open JDK皆可，擇一
+安裝cloudera提供的JDK
 ```
-# 使用自己下載的RPM
+./scpall.sh {path_to_jdk_rpm}
+```
+```
 ./sshall.sh 'yum install -y {path_to_jdk_rpm}'
 ```
+例如：
 ```
-# 使用open JDK
-yum install -y java-1.8.0-openjdk-devel.x86_64
+cp cdp/CM/7.3.1/redhat7/yum/RPMS/x86_64/openjdk8-8.0+232_9-cloudera.x86_64.rpm .
+./scpall.sh openjdk8-8.0+232_9-cloudera.x86_64.rpm
+./sshall.sh 'yum install -y openjdk8-8.0+232_9-cloudera.x86_64.rpm'
 ```
 確認
 ```
@@ -369,18 +320,21 @@ vi /etc/profile
 ./sshall.sh 'source /etc/profile'
 ./sshall.sh 'echo $JAVA_HOME'
 ```
-# 建置NTP Server
+## 建置NTP Server
+> 群創若有自己的內網NTP Server，也可以直接使用他們的
+> 若未安裝ntp，則挪到YUM Local Repository建置後
+
 停用chronyd
 ```
-systemctl stop chronyd; systemctl disable chronyd
+./sshall.sh 'systemctl stop chronyd; systemctl disable chronyd'
 ```
 確認
 ```
-systemctl is-active chronyd; systemctl is-enabled chronyd
+./sshall.sh 'systemctl is-active chronyd; systemctl is-enabled chronyd'
 ```
 安裝NTP Server
 ```
-yum install -y ntp
+./sshall.sh 'yum install -y ntp'
 ```
 修改`/etc/ntp.conf`
 ```
@@ -398,6 +352,7 @@ vi /etc/ntp.conf
   #server 3.centos.pool.ntp.org iburst
   server malvin-hdp2-m1.example.com
   ```
+
 傳送給每台VM
 ```
 ./scpall.sh /etc/ntp.conf
@@ -430,87 +385,26 @@ vi /etc/ntp.conf
 ./sshall.sh 'ntpstat'
 ```
 > 通常需要稍待一下才會開始校時
-# 建置Ambari外部資料庫
-> 注意：不同版本的PostgreSQL其套件名稱、服務名稱與設定檔的路徑各不相同，設定前需要確認清楚
+## 重啟後驗證設定正確
+```
+./sshall.sh 'sh /root/ping_allhosts.sh'
+./sshall.sh 'locale'
+./sshall.sh 'sestatus'
+./sshall.sh 'systemctl is-active firewalld.service; systemctl is-enabled firewalld.service'
+./sshall.sh 'ntpstat'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep ipv6'
+./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
+./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
+./sshall.sh 'java -version; javac -version'
+```
 
-下載Postgres的YUM遠端倉庫清單
-```
-yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-```
-安裝PostgreSQL9.6
-```
-yum install -y postgresql96-server
-```
-初始化
-```
-/usr/pgsql-9.6/bin/postgresql96-setup initdb
-```
-啟用
-```
-systemctl enable postgresql-9.6
-systemctl start postgresql-9.6
-```
-修改`/var/lib/pgsql/9.6/data/pg_hba.conf`
-```
-vi /var/lib/pgsql/9.6/data/pg_hba.conf
-```
-- 修改內容：local連線直接trust，其他IPv4的連線改用md5驗證
-  ```
-  # TYPE  DATABASE        USER            ADDRESS                 METHOD
-  # "local" is for Unix domain socket connections only
-  local   all             all                                     trust
-  # IPv4 connections:
-  host    all             all             0.0.0.0/0               md5
-  ```
-
-修改`/var/lib/pgsql/9.6/data/postgresql.conf`
-```
-vi /var/lib/pgsql/9.6/data/postgresql.conf
-```
-- 修改內容：將localhost的IP改為`*`
-  ```
-  listen_addresses = '*'
-  ```
-
-重啟PostgresSQL
-```
-systemctl restart postgresql-9.6
-```
-建立USER與DATABASE
-```
-su - postgres
-psql
-```
-- PostgreSQL Shell
-  ```
-  CREATE DATABASE ambari;
-  CREATE USER ambari WITH PASSWORD 'ambari';
-  GRANT ALL PRIVILEGES ON DATABASE ambari TO ambari;
-  \connect ambari;
-  CREATE SCHEMA ambari AUTHORIZATION ambari;
-  ALTER SCHEMA ambari OWNER TO ambari;
-  ALTER ROLE ambari SET search\_path to 'ambari', 'public';
-  
-  CREATE DATABASE hive;
-  CREATE USER hive WITH PASSWORD 'hive';
-  GRANT ALL PRIVILEGES ON DATABASE hive TO hive;
-  \q
-  ```
-回到root使用者！
-```
-exit
-```
 # 建置YUM Local Repository
 > 注意：如果需要透過外網安裝套件，建議此步驟挪至安裝Ambari前完成
 
 備份原本的YUM Repository
 ```
-mkdir /etc/yum.repos.d/original_repos
-mv /etc/yum.repos.d/* /etc/yum.repos.d/original_repos
-```
-下載OS ISO
-```
-wget http://ftp.twaren.net/Linux/CentOS/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
+./sshall.sh 'mkdir /etc/yum.repos.d/original_repos'
+./sshall.sh 'mv /etc/yum.repos.d/* /etc/yum.repos.d/original_repos'
 ```
 創建掛載用的目錄
 ```
@@ -519,6 +413,10 @@ mkdir /cdrom
 掛載
 ```
 mount CentOS-7-x86_64-Minimal-2009.iso /cdrom 
+```
+確認掛載成功
+```
+ll /cdrom
 ```
 確認有CentOS的gpgkey
 ```
@@ -575,144 +473,156 @@ vi /etc/yum.repos.d/oslocal.repo
   gpgcheck=0
   ```
 
-下載Ambari與HDP的RPM
+將CDP安裝包複製到HTTP Server
 ```
-wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/ambari/2.x/2.6.2.59/centos7/ambari-2.6.2.59-7-centos7.tar.gz
-wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
-wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+cp -r cdp/CM /var/www/html
+cp -r cdp/CDH /var/www/html
 ```
-解壓縮至HTTP Server
+修改`/etc/yum.repos.d/cloudera-manager.repo`
 ```
-tar xvf ambari-2.6.2.59-7-centos7.tar.gz -C /var/www/html/
-mkdir /var/www/html/hdp
-tar xvf HDP-2.6.5.0-centos7-rpm.tar.gz -C /var/www/html/hdp
-tar xvf HDP-UTILS-1.1.0.22-centos7.tar.gz -C /var/www/html/hdp
-```
-修改`/etc/yum.repos.d/ambari.repo`
-```
-vi /etc/yum.repos.d/ambari.repo
+vi /etc/yum.repos.d/cloudera-manager.repo
 ```
 - 修改內容：
   ```
-  [ambari-2.6.2.59]
-  name=ambari-2.6.2.59
-  baseurl=http://{REPO_SERVER_FQDN}/ambari/centos/2.6.2.59-7
-  enabled=1
-  gpgcheck=0
+  [cloudera-manager]
+  name = Cloudera Manager, Version 7.3.1
+  baseurl = http://{REPO_SERVER_FQDN}/CM/7.3.1
+  gpgcheck = 1
   ```
   
-修改`/etc/yum.repos.d/hdp.repo`
+將PostgreSQL解壓縮至HTTP Server
 ```
-vi /etc/yum.repos.d/hdp.repo
+tar xvf pgdg11.tar.gz -C /var/www/html/
+```
+製作repodata
+```
+createrepo /var/www/html/pgdg11/
+```
+製作
+```
+vi /etc/yum.repos.d/pgdg11
 ```
 - 修改內容：
   ```
-  [HDP-2.6.5.0]
-  name=HDP-2.6.5.0
-  baseurl=http://{REPO_SERVER_FQDN}/hdp/HDP/centos7/2.6.5.0-292/
+  [pgdg11]
+  name=PostgreSQL 11 for RHEL/CentOS $releasever - $basearch
+  baseurl=http://{REPO_SERVER_FQDN}/pgdg11
   enabled=1
-  gpgcheck=0
-  
-  [HDP-UTILS-1.1.0.22]
-  name=HDP-UTILS-1.1.0.22
-  baseurl=http://{REPO_SERVER_FQDN}/hdp/HDP-UTILS/centos7/1.1.0.22/
-  enabled=1
-  gpgcheck=0
+  gpgcheck=1
+  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG
   ```
+複製PostgreSQL的gpgkey
+```
+cp cdp/PostgreSQL/RPM-GPG-KEY-PGDG /etc/pki/rpm-gpg
+```
 將修改後的repo送到每台主機
 ```
 ./scpall.sh /etc/yum.repos.d/oslocal.repo
-./scpall.sh /etc/yum.repos.d/ambari.repo
-./scpall.sh /etc/yum.repos.d/hdp.repo
+./scpall.sh /etc/yum.repos.d/cloudera-manager.repo
+./scpall.sh /etc/yum.repos.d/pgdg11
 ```
 清空YUM快取並列出repolist
 ```
 ./sshall.sh 'yum clean all; yum repolist'
 ```
-# 安裝Ambari
-安裝
+# PostgreSQL安裝建置 (Hadoop 外部資料庫)
+> 注意：不同版本的PostgreSQL其套件名稱、服務名稱與設定檔的路徑各不相同，設定前需要確認清楚
+
+安裝PostgreSQL11
 ```
-yum install -y ambari-server
+yum install -y postgresql11-server
 ```
-下載JDBC
+初始化
 ```
-wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
+/usr/pgsql-11/bin/postgresql-11-setup initdb
 ```
-使用JDBC串接PostgreSQL
+啟用
 ```
-ambari-server setup --jdbc-db=postgres --jdbc-driver=/root/postgresql-42.2.20.jar
+systemctl enable postgresql-11
+systemctl start postgresql-11
 ```
-匯入Ambari使用到的SCHEMA
+修改`/var/lib/pgsql/9.6/data/pg_hba.conf`
 ```
-psql -U ambari
+vi /var/lib/pgsql/9.6/data/pg_hba.conf
+```
+- 修改內容：local連線直接trust，其他IPv4的連線改用md5驗證
+  ```
+  # TYPE  DATABASE        USER            ADDRESS                 METHOD
+  # "local" is for Unix domain socket connections only
+  local   all             all                                     trust
+  # IPv4 connections:
+  host    all             all             0.0.0.0/0               md5
+  ```
+
+修改`/var/lib/pgsql/11/data/postgresql.conf`
+```
+vi /var/lib/pgsql/11/data/postgresql.conf
+```
+- 修改內容：
+  ```
+  listen_addresses = '*'
+  shared_buffers = 256MB
+  wal_buffers = 8MB
+  checkpoint_completion_target = 0.9
+  ```
+
+重啟PostgresSQL
+```
+systemctl restart postgresql-9.6
+```
+建立USER與DATABASE
+```
+su - postgres
+psql
 ```
 - PostgreSQL Shell
   ```
-  \connect ambari;
-  \i /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql;
+  CREATE ROLE scm LOGIN PASSWORD 'scm';
+  CREATE DATABASE scm OWNER scm ENCODING 'UTF8';
+
+  CREATE ROLE rman LOGIN PASSWORD 'rman';
+  CREATE DATABASE rman OWNER rman ENCODING 'UTF8';
+
+  # 以下視使用到的Component建立
+  CREATE ROLE hue LOGIN PASSWORD 'hue';
+  CREATE DATABASE hue OWNER hue ENCODING 'UTF8';
+
+  CREATE ROLE hive LOGIN PASSWORD 'hive';
+  CREATE DATABASE metastore OWNER hive ENCODING 'UTF8';
+
+  CREATE ROLE oozie LOGIN PASSWORD 'oozie';
+  CREATE DATABASE oozie OWNER oozie ENCODING 'UTF8';
+
+  CREATE ROLE das LOGIN PASSWORD 'das';
+  CREATE DATABASE das OWNER das ENCODING 'UTF8';
+
+  CREATE ROLE schemaregistry LOGIN PASSWORD 'schemaregistry';
+  CREATE DATABASE schemaregistry OWNER schemaregistry ENCODING 'UTF8';
+
+  CREATE ROLE smm LOGIN PASSWORD 'smm';
+  CREATE DATABASE smm OWNER smm ENCODING 'UTF8';
+  
   \q
   ```
-  
-設定Ambari Server
+回到root使用者！
 ```
-ambari-server setup
+exit
 ```
-Interactive介面，範例如下：
+
+# 安裝Ambari
+安裝
 ```
-Using python  /usr/bin/python
-Setup ambari-server
-Checking SELinux...
-SELinux status is 'disabled'
-Customize user account for ambari-server daemon [y/n] (n)? n
-Adjusting ambari-server permissions and ownership...
-Checking firewall status...
-Checking JDK...
-Do you want to change Oracle JDK [y/n] (n)? y
-[1] Oracle JDK 1.8 + Java Cryptography Extension (JCE) Policy Files 8
-[2] Oracle JDK 1.7 + Java Cryptography Extension (JCE) Policy Files 7
-[3] Custom JDK
-==============================================================================
-Enter choice (1): 3
-WARNING: JDK must be installed on all hosts and JAVA_HOME must be valid on all hosts.
-WARNING: JCE Policy files are required for configuring Kerberos security. If you plan to use Kerberos,please make sure JCE Unlimited Strength Jurisdiction Policy Files are valid on all hosts.
-Path to JAVA_HOME: /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.292.b10-1.el7_9.x86_64
-Validating JDK on Ambari Server...done.
-Checking GPL software agreement...
-Completing setup...
-Configuring database...
-Enter advanced database configuration [y/n] (n)? y
-Configuring database...
-==============================================================================
-Choose one of the following options:
-[1] - PostgreSQL (Embedded)
-[2] - Oracle
-[3] - MySQL / MariaDB
-[4] - PostgreSQL
-[5] - Microsoft SQL Server (Tech Preview)
-[6] - SQL Anywhere
-[7] - BDB
-==============================================================================
-Enter choice (4): 4
-Hostname (malvin-hdp2-m1): malvin-hdp2-m1.example.com
-Port (5432): 5432
-Database name (ambari): ambari
-Postgres schema (ambari): ambari
-Username (ambari): ambari
-Enter Database Password (ambari):
-Configuring ambari database...
-Configuring remote database connection properties...
-WARNING: Before starting Ambari Server, you must run the following DDL against the database to create the schema: /var/lib/ambari-server/resources/Ambari-DDL-Postgres-CREATE.sql
-Proceed with configuring remote database connection properties [y/n] (y)? y
-Extracting system views...
-............
-Adjusting ambari-server permissions and ownership...
-Ambari Server 'setup' completed successfully.
+yum install -y cloudera-manager-server
+```
+連結外部資料庫
+```
+/opt/cloudera/cm/schema/scm_prepare_database.sh postgresql scm scm scm
 ```
 啟動
 ```
-ambari-server start
+systemctl start cloudera-scm-server
 ```
-> 成功啟動後，趕快用瀏覽器查看`http://{MASTER_01_FQDN}:8080`，確認Ambari可不可以正常使用，並用預設的帳號admin與密碼admin登入吧！
+> 因為服務肥大，所以要等待約兩分鐘才能啟動完成，使用瀏覽器查看`http://{MASTER_01_FQDN}:7180`（確認開啟瀏覽器的主機是否能解析到{MASTER_01_FQDN}，否則改用IP訪問），確認Cloudera Manager可不可以正常使用，並用預設的帳號admin與密碼admin登入吧！
 # 套件
 > 注意：如果是內網不能連外的環境，應事先下載與OS相容的套件RPM，避免安裝過程中還要花時間找套件
 
@@ -787,23 +697,23 @@ ambari-server start
 # 檔案
 > 可以事先下載需要的檔案，加快安裝速度
 ### 必要檔案
-- Ambari 2.6.2.59 RPMs
-- HDP 2.6.5 RPMs
+- CM 7.3.1 RPMs
   ```
-  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP/2.x/2.6.5.0/centos7/HDP-2.6.5.0-centos7-rpm.tar.gz
-  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/HDP-UTILS/1.1.0.22/repos/centos7/HDP-UTILS-1.1.0.22-centos7.tar.gz
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/cm7/7.3.1/repo-as-tarball/cm7.3.1-redhat7.tar.gz
   ```
-  > 需要有購買HDP License的CLOUDERA帳戶才能下載
+- CDH 7.1.6 RPMs
+  ```
+  wget --user {cloudera_user} --password {cloudera_password} --recursive --no-parent --no-host-directories https://archive.cloudera.com/p/cdh7/7.1.6.0/parcels/
+  
+  # 一整包幾十GB，可以只挑需要的版本下載，以RedHat7為例
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/cdh7/7.1.6.0/parcels/CDH-7.1.6-1.cdh7.1.6.p0.10506313-el7.parcel
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/cdh7/7.1.6.0/parcels/CDH-7.1.6-1.cdh7.1.6.p0.10506313-el7.parcel.sha1
+  wget --user {cloudera_user} --password {cloudera_password} https://archive.cloudera.com/p/cdh7/7.1.6.0/parcels/CDH-7.1.6-1.cdh7.1.6.p0.10506313-el7.parcel.sha256
+  ```
+  > 需要有購買CDP License的CLOUDERA帳戶才能下載
 ### 選用檔案
 - OS ISO，以CentOS 7.9 Minimal為例
   ```
   wget http://ftp.twaren.net/Linux/CentOS/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
   ```
-- oracle JDK
-  > 需要註冊ORACLE會員才能下載
-- JDBC for PostgreSQL
-  > 不同版本的JDK要使用不同的JDBC來串接PostgreSQL
-  > 參考：https://jdbc.postgresql.org/download.html
-  ```
-  wget https://jdbc.postgresql.org/download/postgresql-42.2.20.jar
-  ```
+

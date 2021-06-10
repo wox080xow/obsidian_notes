@@ -9,19 +9,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CDP/Moving CM to New Host.md",
+            "file": "CDP/CDP 7.1.6 Installation for Innolux.md",
             "mode": "source"
-          }
-        }
-      },
-      {
-        "id": "0c9563ec49f700c7",
-        "type": "leaf",
-        "state": {
-          "type": "markdown",
-          "state": {
-            "file": "HDP/HDP 2.6.5 Installation.md",
-            "mode": "preview"
           }
         }
       }
@@ -80,7 +69,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CDP/Moving CM to New Host.md",
+                "file": "CDP/CDP 7.1.6 Installation for Innolux.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,15 +89,15 @@
   },
   "active": "f5345adc1295273d",
   "lastOpenFiles": [
+    "CDP/CDP 7.1.6 Installation for Innolux.md",
     "CDP/Moving CM to New Host.md",
-    "CDP/CDP Kerberos.md",
-    "CDP/Untitled.md",
     "HDP/HDP 2.6.5 Installation.md",
-    "Untitled.md",
-    "HDP/HDP 2.6.5 material.md",
-    "HDP/HDP2.6.5材料.md",
-    "HDP/HDP_2.6.5_Installation.md",
+    "CDP/CDP Kerberos.md",
     "CDP/Isilon.md",
-    "HDP/HDP2.6.5安裝文件.md"
+    "CDP/keberos_setup.md",
+    "CLOUDERA/Create Case regarding License.md",
+    "CLOUDERA/Create Assests.md",
+    "Screen Shot 2021-05-26 at 16.15.23.png",
+    "CDP/CDP 7.1.6 Installation for Innolux 1.md"
   ]
 }

@@ -609,7 +609,7 @@ psql
 exit
 ```
 
-# 安裝Ambari
+# 安裝Cloudera Manager
 安裝
 ```
 yum install -y cloudera-manager-server

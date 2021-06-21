@@ -9,8 +9,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "CDP/CDP 7.1.6 Installation for Innolux.md",
-            "mode": "source"
+            "file": "Kafka/Kafka.md",
+            "mode": "preview"
           }
         }
       }
@@ -40,7 +40,7 @@
               "type": "search",
               "state": {
                 "query": "",
-                "matchingCase": false,
+                "matchingCase": true,
                 "explainSearch": false,
                 "collapseAll": false,
                 "extraContext": false,
@@ -52,8 +52,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 208,
-    "collapsed": true
+    "width": 208
   },
   "right": {
     "id": "f00ff1417d74282b",
@@ -69,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "CDP/CDP 7.1.6 Installation for Innolux.md",
+                "file": "Kafka/Kafka.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -89,15 +88,15 @@
   },
   "active": "f5345adc1295273d",
   "lastOpenFiles": [
+    "Kafka/Kafka.md",
     "CDP/CDP 7.1.6 Installation for Innolux.md",
+    "未命名.md",
+    "macOS/藍牙與音效輸出.md",
+    "CDP/CDP Kerberos.md",
     "CDP/Moving CM to New Host.md",
     "HDP/HDP 2.6.5 Installation.md",
-    "CDP/CDP Kerberos.md",
     "CDP/Isilon.md",
     "CDP/keberos_setup.md",
-    "CLOUDERA/Create Case regarding License.md",
-    "CLOUDERA/Create Assests.md",
-    "Screen Shot 2021-05-26 at 16.15.23.png",
-    "CDP/CDP 7.1.6 Installation for Innolux 1.md"
+    "CLOUDERA/Create Case regarding License.md"
   ]
 }

@@ -25,6 +25,7 @@ ping -c4 tnisilonh500.cminl.oa
 isi zone zones list
 ```
 分配給HDFS使用的zone為`zone1-cdp`
+
 ![](https://i.imgur.com/lKlWUbV.png)
 ```		
 ls -l /ifs/data/zone1/cdp/hadoop-root

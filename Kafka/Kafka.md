@@ -83,7 +83,7 @@ sudo ln -sfn /usr/local/opt/openjdk@8/libexec/openjdk.jdk /Library/Java/JavaVirt
 echo 'export PATH="/usr/local/opt/openjdk@8/bin:$PATH"' >> ~/.bash_profile
 ```
 
-210621
+# 210621
 用Homebrew安裝kafka
 ```
 brew install kafka

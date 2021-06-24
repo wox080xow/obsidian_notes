@@ -9,8 +9,8 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "Kafka/Kafka.md",
-            "mode": "preview"
+            "file": "CDP/Isilon check-up for CDP.md",
+            "mode": "source"
           }
         }
       }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Kafka/Kafka.md",
+                "file": "CDP/Isilon check-up for CDP.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,14 +88,14 @@
   },
   "active": "f5345adc1295273d",
   "lastOpenFiles": [
-    "Kafka/Kafka.md",
-    "CDP/CDP 7.1.6 Installation for Innolux.md",
     "未命名.md",
+    "CDP/Isilon.md",
+    "CDP/CDP 7.1.6 Installation for Innolux.md",
+    "Kafka/Kafka.md",
     "macOS/藍牙與音效輸出.md",
     "CDP/CDP Kerberos.md",
     "CDP/Moving CM to New Host.md",
     "HDP/HDP 2.6.5 Installation.md",
-    "CDP/Isilon.md",
     "CDP/keberos_setup.md",
     "CLOUDERA/Create Case regarding License.md"
   ]

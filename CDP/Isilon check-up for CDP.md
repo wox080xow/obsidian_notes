@@ -28,6 +28,12 @@ isi zone zones list
 分配給HDFS使用的zone為`zone1-cdp`
 
 ![](https://i.imgur.com/lKlWUbV.png)
+```
+isi hdfs settings view --zone1-cdp
+```
+HDFS的路徑為`/ifs/data/zone1/cdp/hadoop-root`
+
+![](https://i.imgur.com/6QVRuqL.png)
 ```		
 ls -l /ifs/data/zone1/cdp/hadoop-root
 ```

@@ -10,8 +10,8 @@ ping -c4 isicdp.example.com
 ```
 ## 確認Hadoop USERS and GROUPS已建立並且Enable
 1. 進入Isilon的OneFS UI
-網址為https://{ISILON_FQDN}:8080
-預設帳號密碼是root與Isilon的root密碼
+	- 網址為https://{ISILON_FQDN}:8080
+ 	- 預設帳號密碼是root與Isilon的root密碼
 2. Access -> Member and roles
 ![](https://i.imgur.com/c53WN2G.png)
 3. 確認Hadoop相關user and group的Account status為"Enabled"

@@ -10,7 +10,7 @@
           "type": "markdown",
           "state": {
             "file": "CDP/Isilon check-up for CDP.md",
-            "mode": "source"
+            "mode": "preview"
           }
         }
       }
@@ -88,6 +88,7 @@
   },
   "active": "f5345adc1295273d",
   "lastOpenFiles": [
+    "CDP/Isilon check-up for CDP.md",
     "未命名.md",
     "CDP/Isilon.md",
     "CDP/CDP 7.1.6 Installation for Innolux.md",
@@ -96,7 +97,6 @@
     "CDP/CDP Kerberos.md",
     "CDP/Moving CM to New Host.md",
     "HDP/HDP 2.6.5 Installation.md",
-    "CDP/keberos_setup.md",
-    "CLOUDERA/Create Case regarding License.md"
+    "CDP/keberos_setup.md"
   ]
 }

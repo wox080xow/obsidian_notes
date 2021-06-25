@@ -4,12 +4,13 @@
 ## 三、確認HDFS USERS家目錄已建立
 <br></br>
 ## 確認CDP節點能否ping到Isilon
+以我的測試環境為例，Isilon SmartConnect的FQDN為`isicdp.example.com`
 ```
-ping -c4 tnisilonh500.cminl.oa
+ping -c4 isicdp.example.com
 ```
 ## 確認Hadoop USERS and GROUPS已建立並且Enable
 1. 進入Isilon的OneFS UI
-網址為https://tnisilonh500.cminl.oa:8080
+網址為https://{ISILON_FQDN}:8080
 預設帳號密碼是root與Isilon的root密碼
 2. Access -> Member and roles
 ![](https://i.imgur.com/c53WN2G.png)

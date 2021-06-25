@@ -37,7 +37,7 @@ HDFS的路徑為`/ifs/data/zone1/cdp/hadoop-root`
 ```		
 ls -l /ifs/data/zone1/cdp/hadoop-root
 ```
-查看`zone1-cdp`路徑`/ifs/data/zone1/cdp/hadoop-root`有無`user`目錄
+查看HDFS的路徑`/ifs/data/zone1/cdp/hadoop-root`有無`user`目錄
 ![](https://i.imgur.com/AM0nL8Q.png)
 ```
 ls -l /ifs/data/zone1/cdp/hadoop-root/user

@@ -255,7 +255,7 @@ vi /etc/netconfig
 ```
 確認
 ```
-sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness
+./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
 ```
 ### 停用transparent_hugepage
 停用
@@ -268,7 +268,7 @@ sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/
 ```
 設定「重啟後停用」
 ```
-./sshall.sh 'echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local; tail -n 2 /etc/rc.d/rc.local'
+./sshall.sh "echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local; tail -n 2 /etc/rc.d/rc.local"
 ```
 ### 安裝JDK8
 安裝cloudera提供的JDK
@@ -284,13 +284,10 @@ cp cdp/CM/7.3.1/redhat7/yum/RPMS/x86_64/openjdk8-8.0+232_9-cloudera.x86_64.rpm .
 ./scpall.sh openjdk8-8.0+232_9-cloudera.x86_64.rpm
 ./sshall.sh 'yum install -y openjdk8-8.0+232_9-cloudera.x86_64.rpm'
 ```
-確認
-```
-./sshall.sh 'java -version; javac -version'
-```
 確認JDK目錄名稱
 ```
 ls /usr/lib/jvm/
+ls /usr/java/
 ```
 設定`$JAVA_HOME`
 ```
@@ -309,6 +306,11 @@ vi /etc/profile
   PATH=$PATH:$HOME/.local/bin:$HOME/bin:$JAVA_HOME/bin
   export PATH
   ```
+  ```
+  export JAVA_HOME=/usr/java/jdk1.8.0_232-cloudera
+  PATH=$PATH:$HOME/.local/bin:$HOME/bin:$JAVA_HOME/bin
+  export PATH
+  ```
 ```
 ./scpall.sh '/etc/profile'
 ```
@@ -316,9 +318,15 @@ vi /etc/profile
 # 自動
 ./sshall.sh 'echo -e "export JAVA_HOME={path_to_jdk}\nPATH=$PATH:$HOME/.local/bin:$HOME/bin:$JAVA_HOME/bin\nexport PATH"'
 ```
+確認`$JAVA_HOME`
 ```
 ./sshall.sh 'source /etc/profile'
-./sshall.sh 'echo $JAVA_HOME'
+./sshall.sh "echo $JAVA_HOME" # 必須要是雙引號
+```
+登出root的shell，重新登入後確認`java`與`javac`版本
+> 需要找更好的方式確認，可能會command not found
+```
+./sshall.sh "export PATH=$PATH/bin;java -version;javac -verison"
 ```
 ## 建置NTP Server
 > 群創若有自己的內網NTP Server，也可以直接使用他們的
@@ -478,6 +486,10 @@ vi /etc/yum.repos.d/oslocal.repo
 cp -r cdp/CM /var/www/html
 cp -r cdp/CDH /var/www/html
 ```
+製作repodata
+```
+createrepo /var/www/html/CM/7.3.1/
+```
 修改`/etc/yum.repos.d/cloudera-manager.repo`
 ```
 vi /etc/yum.repos.d/cloudera-manager.repo
@@ -485,9 +497,10 @@ vi /etc/yum.repos.d/cloudera-manager.repo
 - 修改內容：
   ```
   [cloudera-manager]
-  name = Cloudera Manager, Version 7.3.1
-  baseurl = http://{REPO_SERVER_FQDN}/CM/7.3.1
-  gpgcheck = 1
+  name=Cloudera Manager, Version 7.3.1
+  baseurl=http://{REPO_SERVER_FQDN}/CM/7.3.1
+  gpgcheck=1
+  gpgkey=http://{REPO_SERVER_FQDN}/CM/7.3.1/redhat7/yum/RPM-GPG-KEY-cloudera
   ```
   
 將PostgreSQL解壓縮至HTTP Server
@@ -500,7 +513,7 @@ createrepo /var/www/html/pgdg11/
 ```
 製作
 ```
-vi /etc/yum.repos.d/pgdg11
+vi /etc/yum.repos.d/pgdg11.repo
 ```
 - 修改內容：
   ```
@@ -514,12 +527,13 @@ vi /etc/yum.repos.d/pgdg11
 複製PostgreSQL的gpgkey
 ```
 cp cdp/PostgreSQL/RPM-GPG-KEY-PGDG /etc/pki/rpm-gpg
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG
 ```
 將修改後的repo送到每台主機
 ```
 ./scpall.sh /etc/yum.repos.d/oslocal.repo
 ./scpall.sh /etc/yum.repos.d/cloudera-manager.repo
-./scpall.sh /etc/yum.repos.d/pgdg11
+./scpall.sh /etc/yum.repos.d/pgdg11.repo
 ```
 清空YUM快取並列出repolist
 ```
@@ -541,9 +555,9 @@ yum install -y postgresql11-server
 systemctl enable postgresql-11
 systemctl start postgresql-11
 ```
-修改`/var/lib/pgsql/9.6/data/pg_hba.conf`
+修改`/var/lib/pgsql/11/data/pg_hba.conf`
 ```
-vi /var/lib/pgsql/9.6/data/pg_hba.conf
+vi /var/lib/pgsql/11/data/pg_hba.conf
 ```
 - 修改內容：local連線直接trust，其他IPv4的連線改用md5驗證
   ```
@@ -568,7 +582,7 @@ vi /var/lib/pgsql/11/data/postgresql.conf
 
 重啟PostgresSQL
 ```
-systemctl restart postgresql-9.6
+systemctl restart postgresql-11
 ```
 建立USER與DATABASE
 ```
@@ -613,6 +627,10 @@ exit
 安裝
 ```
 yum install -y cloudera-manager-server
+```
+如果沒抓到GPGKEY
+```
+rpm --import /var/www/html/CM/7.3.1/redhat/yum/RPM-GPG-KEY-cloudera
 ```
 連結外部資料庫
 ```

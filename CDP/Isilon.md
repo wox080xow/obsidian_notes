@@ -20,13 +20,13 @@ isi license view HDFS
 ```
 啟用HDFS
 ```
-isi service hdfs enable
+isi services hdfs enable
 ```
 更新補丁清單
 ```
 isi upgrade patches list
 ```
-安裝補丁
+安裝補丁（沒有補丁就不用做了）
 ```
 isi upgrade patches install patch-<patch-ID>.pkg --rolling=false
 ```
@@ -75,7 +75,7 @@ isi auth groups create hdfs --zone zone1-cdp --provider local --gid 986
 ```
 創建相應的user
 ```
-isi auth users create hdfs --primary-group hdfs --zone zone1-cdp --provider local --home-directory /ifs/data/zone1/hadoop/user/hdfs --uid 989
+isi auth users create hdfs --primary-group hdfs --zone zone1-cdp --provider local --home-directory /ifs/data/zone1/cdp/hadoop-root/user/hdfs --uid 989
 ```
 
 ```

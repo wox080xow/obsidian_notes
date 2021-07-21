@@ -1,4 +1,9 @@
+# 環境說明
+- CDP 7.1.6
+- HBase 2.2.3
+- CentOS 7
 # 事前準備：安裝Apache Maven
+
 尋找並安裝Apache Maven
 ```
 yum whatprovides 'mvn'

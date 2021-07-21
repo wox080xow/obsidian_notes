@@ -15,9 +15,9 @@ CentOS7.6
 
 |node|FQDN|IP|core|memory|
 |-|-|-|-|-|
-|?|?|?|8|64G|
-|?|?|?|8|16G|
-|?|?|?|8|16G|
+|?|mdw|10...67|8|31G|
+|?|sdw1|10...68|8|62G|
+|?|sdw2|10...69|8|62G|
 
 Meso建議先Master兼職Worker
 # Linux 作業系統參數設定

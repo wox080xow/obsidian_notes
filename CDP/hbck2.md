@@ -15,6 +15,7 @@ yum install -y maven
 yum --showduplicates list maven
 ```
 可惜只有3.0.5
+
 ![](https://i.imgur.com/ZNzaLMK.png)
 
 移除舊版
@@ -40,6 +41,7 @@ cd hbase-operator-tools/
 mvn clean install -DskipTests
 ```
 應該有跑了十分鐘
+
 ![](https://i.imgur.com/gaJoTpV.png)
 
 安裝好hbck2後，使用hbase指令執行
@@ -47,4 +49,5 @@ mvn clean install -DskipTests
 hbase hbck -j /root/hbase-operator-tools/hbase-hbck2/target/hbase-hbck2-1.2.0-SNAPSHOT.jar
 ```
 長長一串使用說明
+
 ![](https://i.imgur.com/yUBO8Yu.png)

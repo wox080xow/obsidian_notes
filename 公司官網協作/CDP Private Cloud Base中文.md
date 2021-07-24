@@ -18,7 +18,7 @@ CDP Private Cloud Base由各種組件組成，如Apache HDFS、Apache Hive3、Ap
 以交互方式瀏覽、查詢和探索資料。
 服務包括：HDFS、Ranger、Atlas、Hive和Hue
 ### 作業資料庫
-為現代資料驅動型業務提供實時見解。
+為現代data-driven業務提供即時洞見。
 服務包括：HDFS，Ranger，Atlas和HBase
 ### 客製化服務
 選擇您自己的服務，所選服務所依賴的服務將自動包含在內。

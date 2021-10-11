@@ -208,7 +208,7 @@ vi /etc/sysconfig/selinux
 ```
 ```
 # 自動
-./sshall.sh 'sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux''
+./sshall.sh 'sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux'
 ```
 > 單引號可以包單引號！
 ```
@@ -458,7 +458,10 @@ yum installl -y yum-utils createrepo
 ```
 將ISO中的RPM同步到HTTP Server
 ```
-reposync -r /var/www/html/oslocal
+# 先確認已經掛載ISO，並做好/etc/yum.repos.d/oslocal.repo
+mkdir /var/www/html/oslocal
+cd /var/www/html
+reposync -r oslocal
 ```
 將目錄改名
 ```

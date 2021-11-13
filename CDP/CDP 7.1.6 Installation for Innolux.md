@@ -61,7 +61,7 @@ yum install -y sshpass
 ```
 ### 製作每台主機的ssh金鑰，並將ssh公鑰發到每台主機
 ```
-while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N''" </dev/null; done <hostlist
+while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
 while read h; do sshpass -p {password} ssh $h "cat /root/.ssh/id\_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
 while read h; do sshpass -p {password} scp /root/.ssh/authorized\_keys $h:/root/.ssh/authorized\_keys; done <hostlist >>/root/.ssh/authorized_keys
 ```
@@ -208,11 +208,11 @@ vi /etc/sysconfig/selinux
 ```
 ```
 # 自動
+# 單引號可以包單引號的例外
 ./sshall.sh 'sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux'
 ```
-> 單引號可以包單引號！
 ```
-./sshall.sh 'cat /etc/sysconfig/selinux | grep 'SELINUX=disabled'
+./sshall.sh "cat /etc/sysconfig/selinux | grep 'SELINUX=disabled'"
 ```
 ### 關閉及停用防火牆
 關閉及停用
@@ -226,11 +226,14 @@ vi /etc/sysconfig/selinux
 ### 停用IPv6
 停用
 ```
-./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/all/disable\_ipv6; echo 1 > /proc/sys/net/ipv6/conf/default/disable\_ipv6; echo 'net.ipv6.conf.all.disable\_ipv6 = 1' >> /etc/sysctl.conf; echo 'net.ipv6.conf.default.disable\_ipv6 = 1' >> /etc/sysctl.conf'
+./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6'
+./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6'
+./sshall.sh "echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf"
+./sshall.sh "echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf"
 ```
 確認
 ```
-./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable\_ipv6; cat /proc/sys/net/ipv6/conf/default/disable\_ipv6; cat /etc/sysctl.conf | grep ipv6'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
 ```
 檢查有無`/etc/netconfig`
 ```
@@ -679,11 +682,6 @@ systemctl start cloudera-scm-server
   ```
   yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   yum install -y postgresql96-server
-  ```
-- Ambari*
-  > 注意：需要事先建置Local Repository
-  ```
-  yum install -y ambari-server
   ```
  
 ## 方便工具

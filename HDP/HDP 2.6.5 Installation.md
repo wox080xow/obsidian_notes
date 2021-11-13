@@ -95,7 +95,7 @@ yum install -y sshpass
 > ![](https://i.imgur.com/psk5Wxu.png)
 ### 製作每台主機的ssh金鑰，並將ssh公鑰發到每台主機
 ```
-while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N''" </dev/null; done <hostlist
+while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
 while read h; do sshpass -p {password} ssh $h "cat /root/.ssh/id\_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
 while read h; do sshpass -p {password} scp /root/.ssh/authorized\_keys $h:/root/.ssh/authorized\_keys; done <hostlist >>/root/.ssh/authorized_keys
 ```

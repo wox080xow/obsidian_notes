@@ -77,6 +77,7 @@ vi /etc/cloudera-scm-agent/config.ini
   #server_host=172.16.1.57
   server_host=172.16.1.64
   ```
+
 All Hosts重啟Agent
 ```
 systemctl restart cloudera-scm-agent

@@ -2,7 +2,7 @@
 # 二、[設定SSH無密碼登入](#設定ssh無密碼登入)
 # 三、[OS設定](#os設定)
 # 四、[建置NTP Server](#建置ntp-server)
-# 五、[建置Ambari外部資料庫](#建置ambari外部資料庫)
+# 五、[Hadoop外部資料庫安裝建置 ](#hadoop外部資料庫安裝建置)
 # 六、[建置YUM Local Repository](#建置yum-local-repository)
 # 七、[安裝Cloudera Manager](#安裝cloudera-manager)
 # 附錄、[套件](#套件)
@@ -564,7 +564,7 @@ vi /etc/yum.repos.d/cloudera-manager.repo
 ./sshall.sh 'yum install gcc' # AppStream
 ./sshall.sh 'yum install cloudera-manager-server' # Cloudera Manager
 ```
-# PostgreSQL安裝建置 (Hadoop 外部資料庫)
+# Hadoop外部資料庫安裝建置
 > 注意：不同版本的PostgreSQL其套件名稱、服務名稱與設定檔的路徑各不相同，設定前需要確認清楚
 
 安裝PostgreSQL12

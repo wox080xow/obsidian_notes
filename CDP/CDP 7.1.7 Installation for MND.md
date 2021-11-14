@@ -391,7 +391,11 @@ vi /etc/profile
 > (rhel8)
 > 沒有NTP Server了！`chronyd`取而代之
 
-確認
+修改時區
+```
+./sshall.sh 'timedatectl set-timezone Asia/Taipei'
+```
+確認`chronyd`
 ```
 ./sshall.sh 'systemctl is-active chronyd; systemctl is-enabled chronyd'
 ```
@@ -403,7 +407,9 @@ vi /etc/chrony.conf
 - 修改內容：Set its value to the **network** or **subnet** address from which the clients are allowed to connect.
 - 例如：
   ```
-  #pool 2.rhel.pool.ntp.org iburst
+  #pool 2.rhel.pool.ntp.org iburst # 註解預設的NTP Server pool
+  server malvin-cdp-m1-2111.example.com
+  local stratum 10 # 內網的NTP Server依賴自己主機的時間
   allow 172.16.1.0/24
   ```
 ### 設定Client
@@ -676,6 +682,34 @@ systemctl start cloudera-scm-server
 （確認開啟瀏覽器的主機是否能解析到{MASTER_01_FQDN}，否則改用IP訪問）
 ![](https://i.imgur.com/NEnqpE6.png)
 使用預設的帳號admin與密碼admin登入，確認Cloudera Manager可不可以正常運作吧！
+
+# Hadoop Stack
+CMS
+- Alert Publisher
+- Event Server
+- Host Monitor
+- Service Monitor
+
+|Component|Role|Master 1|Master 2|Worker 1|Worker2|
+|-|-|-|-|-|-|
+|Cloudera|CM Server|✓|-|-|-|
+|Cloudera|CM Agent|✓|✓|✓|✓|
+|Cloudera|CMS|✓|-|-|-|
+|ZooKeeper|Server|✓|✓|✓|-|
+|HDFS|NameNode|✓|-|-|-|
+|HDFS|Secondary NameNode|-|✓|-|-|
+|HDFS|JournalNode|✓|✓|✓|-|
+|HDFS|DataNode|✓|✓|✓|✓|
+|YARN|ResourceManager|-|✓|-|-|
+|YARN|NodeManager|✓|✓|✓|✓|
+|MapReduce|JobHistory Server|-|✓|-|-|
+|Hive|Hive MetaStore|-|✓|-|-|
+|Hive on Tez|Hive Server 2|-|✓|-|-|
+|HUE|Server|-|✓|-|-|
+|Spark|History Server|-|✓|-|-|
+|Oozie|Server|-|✓|-|-|
+
+
 # 套件
 > 注意：如果是內網不能連外的環境，應事先下載與OS相容的套件RPM，避免安裝過程中還要花時間找套件
 
@@ -702,11 +736,14 @@ systemctl start cloudera-scm-server
   yum install -y openjdk8-8.0+232_9-cloudera.x86_64.rpm
   ```
 - external database，以PostgreSQL12為例*
+  > 注意安裝順序
+
   ```
-  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
-  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-libs-12.5-1PGDG.rhel8.x86_64.rpm
-  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-devel-12.5-1PGDG.rhel8.x86_64.rpm
+  yum install postgresql12-libs-12.5-1PGDG.rhel8.x86_64.rpm
+  yum install postgresql12-12.5-1PGDG.rhel8.x86_64.rpm
+  yum install postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
   ```
+
  
 ## 方便工具
 - ansible*
@@ -743,7 +780,7 @@ systemctl start cloudera-scm-server
 - CM 7.4.4 RPMs
     > 需要有購買CDP License的CLOUDERA帳戶才能下載
     
-    > 此tarball已經包含`allkeys.asc`與`repod.xml`
+    > 此tarball已經包含`allkeys.asc`與`repod.xml`，也有附上JDK
   ```
   wget https://[username]:[password]@archive.cloudera.com/p/cm7/7.4.4/repo-as-tarball/cm7.4.4-redhat8.tar.gz
   wget https://[username]:[password]@archive.cloudera.com/p/cm7/7.4.4/repo-as-tarball/cm7.4.4-redhat8.tar.gz.md5
@@ -761,7 +798,12 @@ systemctl start cloudera-scm-server
   wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976-el8.parcel.sha1
   wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976-el8.parcel.sha256
   ```
-
+- PostgreSQL 12
+  ```
+  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
+  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-libs-12.5-1PGDG.rhel8.x86_64.rpm
+  wget https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-8.2-x86_64/postgresql12-devel-12.5-1PGDG.rhel8.x86_64.rpm
+  ```
 ### 選用檔案
 - OS ISO，以Red Hat Enterprise Linux 8.2 DVD為例（需要申請Red Hat帳號並登入才能下載）
   https://developers.redhat.com/content-gateway/file/rhel-8.2-x86_64-dvd.iso

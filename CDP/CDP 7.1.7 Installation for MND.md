@@ -75,15 +75,54 @@ hostname -f
 yum install -y sshpass
 ```
 ### 製作每台主機的ssh金鑰，並將ssh公鑰發到每台主機
-> (rhel8)
-> 需要先一個一個`ssh`留下footprint並輸入密碼登入後，`sshpass`才能正常運作
+> 一開始並不能很順的使用迴圈搭配`sshpass`，是因為`sshd` 的設定要求問footprint
+> 三個解方：
+> 1.  `ssh`帶參數`-o StrictHostKeyChecking=no`
+> 2. 先一個一個`ssh`留下footprint並輸入密碼登入
+> 3. 先修改每一個節點的`sshd`設定
 > ![](https://i.imgur.com/kzi93oo.png)
-```
-while read h;do sshpass -p {password} ssh $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
-while read h; do sshpass -p {password} ssh $h "cat /root/.ssh/id\_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
-while read h; do sshpass -p {password} scp /root/.ssh/authorized\_keys $h:/root/.ssh/authorized\_keys; done <hostlist >>/root/.ssh/authorized_keys
-```
 
+```
+while read h;do sshpass -p {password} ssh -o StrictHostKeyChecking=no $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
+while read h; do sshpass -p {password} ssh -o StrictHostKeyChecking=no $h "cat /root/.ssh/id\_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
+while read h; do sshpass -p {password} scp /root/.ssh/authorized\_keys $h:/root/.ssh/authorized\_keys; done <hostlist
+```
+確認
+```
+while read h; do ssh $h hostname </dev/null; done <hostlist
+```
+### ssh到所有主機的腳本
+```
+vi sshall.sh
+```
+- 內容：
+  ```
+  while read h
+  do
+    ssh $h "hostname;$1" </dev/null
+  done <hostlist
+  ```
+  
+```
+chmod +x sshall.sh
+```
+### scp到所有主機的腳本
+```
+vi scpall.sh
+```
+- 內容：
+  ```
+  while read h
+  do
+    ssh $h hostname </dev/null
+    scp $1 $h:$1 </dev/null
+  done <hostlist
+  ```
+> 可以再優化：一次傳送多份檔案
+
+```
+chmod +x scpall.sh
+```
 ### 修改ssh設定檔`/etc/ssh/sshd_config`與`/etc/ssh/ssh_config`
 修改`/etc/ssh/sshd_config`
 ```
@@ -105,39 +144,10 @@ vi /etc/ssh/ssh_config
   StrictHostKeyChecking no
   ```
 ```
-service sshd restart
+./scpall.sh /etc/ssh/sshd_config
+./scpall.sh /etc/ssh/ssh_config
+./sshall.sh "service sshd restart"
 ```
-### ssh到所有主機的腳本
-```
-vi sshall.sh
-```
-- 內容：
-  ```
-  while read h
-  do
-    #echo $h
-    #echo $1
-    ssh $h "hostname;$1" </dev/null
-    #sshpass -p asdf1234 ssh $h "hostname;$1" </dev/null
-  done <hostlist
-  #done <iplist
-  ```
-### scp到所有主機的腳本
-```
-vi scpall.sh
-```
-- 內容：
-  ```
-  while read h
-  do
-    ssh $h hostname </dev/null
-    #sshpass -p asdf1234 ssh $h hostname </dev/null
-    scp $1 $h:$1 </dev/null
-    #sshpass -p asdf1234 scp $1 $h:$1 </dev/null
-  done <hostlist
-  #done <iplist
-  ```
-> 可以再優化：一次傳送多份檔案
 ### ping測試腳本
 ```
 vi allhost_ping.sh

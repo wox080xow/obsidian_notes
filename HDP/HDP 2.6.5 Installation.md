@@ -270,11 +270,11 @@ vi /etc/sysconfig/selinux
 ### 停用IPv6
 停用
 ```
-./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/all/disable\_ipv6; echo 1 > /proc/sys/net/ipv6/conf/default/disable\_ipv6; echo 'net.ipv6.conf.all.disable\_ipv6 = 1' >> /etc/sysctl.conf; echo 'net.ipv6.conf.default.disable\_ipv6 = 1' >> /etc/sysctl.conf'
+./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6; echo 1 > /proc/sys/net/ipv6/conf/default/disable\ipv6; echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf; echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf'
 ```
 確認
 ```
-./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable\_ipv6; cat /proc/sys/net/ipv6/conf/default/disable\_ipv6; cat /etc/sysctl.conf | grep ipv6'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep ipv6'
 ```
 檢查有無`/etc/netconfig`
 ```
@@ -489,7 +489,7 @@ psql
   \connect ambari;
   CREATE SCHEMA ambari AUTHORIZATION ambari;
   ALTER SCHEMA ambari OWNER TO ambari;
-  ALTER ROLE ambari SET search\_path to 'ambari', 'public';
+  ALTER ROLE ambari SET search_path to 'ambari', 'public';
   
   CREATE DATABASE hive;
   CREATE USER hive WITH PASSWORD 'hive';

@@ -36,7 +36,7 @@ systemctl restart postgresql-11
 Destination倒入資料
 ```
 su - postgres
-psql -f /tmp/pgdumpall.sql
+psql -f /tmp/pg_dumpall.sql
 ```
  
  # 安裝Cloudera Manager與複製設定

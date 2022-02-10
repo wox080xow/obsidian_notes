@@ -123,7 +123,7 @@ systemctl enable kadmin.service
 	while read h;do ssh $h "hostname;yum -y install krb5-workstation krb5-libs" </dev/null;done < hostlist
 	```
 1. #### 上傳設定檔`/etc/krb5.conf`
-	 - 叢集裡所有主集都要有Kerberos這台主機的`etc/krb5.conf`
+	 - 叢集裡所有主集都要有Kerberos這台主機的`/etc/krb5.conf`
 	```
 	while read h;do scp /etc/krb5.comf $h:/etc/krb5.conf;done < hostlist
 	```

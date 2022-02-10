@@ -4,7 +4,8 @@
 # 四、[建置NTP Server](#建置ntp-server)
 # 五、[Hadoop外部資料庫安裝建置 ](#hadoop外部資料庫安裝建置)
 # 六、[建置YUM Local Repository](#建置yum-local-repository)
-# 七、[安裝Cloudera Manager](#安裝cloudera-manager)
+# 七、[重新啟動確認設定](#重新啟動確認設定)
+# 八、[安裝Cloudera Manager](#安裝cloudera-manager)
 # 附錄、[套件](#套件)
 # 附錄、[檔案](#檔案)
 
@@ -75,6 +76,11 @@ hostname -f
 yum install -y sshpass
 ```
 ### 製作每台主機的ssh金鑰，並將ssh公鑰發到每台主機
+> 注意：
+> 1. 如果`ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''`產出的私鑰Cloudera Manager驗證不過，可能是因為不吃`OPENSSH PRIVATE KEY`，改用`ssh-keygen -f /root/.ssh/id_rsa -m pem -t rsa -b 2048 -N ''`產出`RSA PRIVATE KEY`
+> 2. 確認key的rwx權限
+> 3. 每個節點製作key之前先完成的`/etc/hosts`
+
 > 一開始並不能很順的使用迴圈搭配`sshpass`，是因為`sshd` 的設定要求問footprint
 > 三個解方：
 > 1.  `ssh`帶參數`-o StrictHostKeyChecking=no`
@@ -84,8 +90,14 @@ yum install -y sshpass
 
 ```
 while read h;do sshpass -p {password} ssh -o StrictHostKeyChecking=no $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
-while read h; do sshpass -p {password} ssh -o StrictHostKeyChecking=no $h "cat /root/.ssh/id\_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
-while read h; do sshpass -p {password} scp /root/.ssh/authorized\_keys $h:/root/.ssh/authorized\_keys; done <hostlist
+while read h; do sshpass -p {password} ssh -o StrictHostKeyChecking=no $h "cat /root/.ssh/id_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
+while read h; do sshpass -p {password} scp /root/.ssh/authorized_keys $h:/root/.ssh/authorized_keys; done <hostlist
+```
+```
+# 沒有sshpass，手動輸入密碼
+while read h;do ssh -o StrictHostKeyChecking=no $h "ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''" </dev/null; done <hostlist
+while read h; do ssh -o StrictHostKeyChecking=no $h "cat /root/.ssh/id_rsa.pub" </dev/null; done <hostlist >>/root/.ssh/authorized_keys
+while read h; do scp /root/.ssh/authorized_keys $h:/root/.ssh/authorized_keys; done <hostlist
 ```
 確認
 ```
@@ -316,10 +328,18 @@ vi /etc/default/grub
 確認
 ```
 ./sshall.sh 'grep -i numa /etc/default/grub'
-````
-產生新的GRUB設定檔
+```
+確認BIOS或UEFI
+```
+[ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
+```
+BIOS產生新的GRUB設定檔
 ```
 ./sshall.sh 'grub2-mkconfig -o /etc/grub2.cfg'
+```
+UEFI產生新的GRUB設定檔
+```
+./sshall.sh 'grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg'
 ```
 ### 重新啟動確認設定
 ```
@@ -332,8 +352,10 @@ vi /etc/default/grub
 ./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
 ./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
 ./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
-./sshall.sh 'dmesg|grep -i numa'
+./sshall.sh 'numactl --hardware'
 ```
+
+> `./sshall.sh 'dmesg|grep -i numa'`這個會誤判，不知道為什麼...
 
 ### 安裝JDK8
 安裝cloudera提供的JDK
@@ -393,7 +415,7 @@ vi /etc/profile
 確認`java`與`javac`版本
 > 需要找更好的方式確認，可能會command not found
 ```
-./sshall.sh "export PATH=$PATH/bin;java -version;javac -version"
+./sshall.sh "export PATH=$PATH/bin;java -version;javac -version" # 必須是雙引號
 ```
 ## 建置NTP Server
 > 若未安裝ntp，則挪到YUM Local Repository建置後
@@ -570,6 +592,7 @@ vi /etc/yum.repos.d/cloudera-manager.repo
 ```
 ./sshall.sh 'yum clean all'
 ./sshall.sh 'yum repolist'
+./sshall.sh 'yum module list'
 ./sshall.sh 'yum install bash' # BaseOS
 ./sshall.sh 'yum install gcc' # AppStream
 ./sshall.sh 'yum install cloudera-manager-server' # Cloudera Manager
@@ -580,9 +603,9 @@ vi /etc/yum.repos.d/cloudera-manager.repo
 安裝PostgreSQL12
 > 注意：順序！！
 ```
-yum install postgresql12-libs-12.5-1PGDG.rhel8.x86_64.rpm
-yum install postgresql12-12.5-1PGDG.rhel8.x86_64.rpm
-yum install postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
+yum install -y postgresql12-libs-12.5-1PGDG.rhel8.x86_64.rpm
+yum install -y postgresql12-12.5-1PGDG.rhel8.x86_64.rpm
+yum install -y postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
 ```
 初始化
 ```
@@ -660,6 +683,36 @@ psql
 回到root使用者！
 ```
 exit
+```
+
+# 重新啟動確認設定
+```
+./sshall.sh 'sh allhost_ping.sh'
+./sshall.sh 'sh allhost_ssh.sh'
+./sshall.sh 'cat success_ssh'
+./sshall.sh locale
+./sshall.sh sestatus
+./sshall.sh 'systemctl is-active firewalld.service; systemctl is-enabled firewalld.service'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
+./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
+./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
+./sshall.sh 'dmesg|grep -i numa'
+```
+```
+./sshall.sh 'yum clean all'
+./sshall.sh 'yum repolist'
+./sshall.sh 'yum module list'
+./sshall.sh 'yum install bash' # BaseOS
+./sshall.sh 'yum install gcc' # AppStream
+./sshall.sh 'yum install cloudera-manager-server' # Cloudera Manager
+```
+```
+./sshall.sh "echo $JAVA_HOME" # 必須要是雙引號
+./sshall.sh "export PATH=$JAVA_HOME/bin; java -version; javac -version" # 必須是雙引號
+```
+```
+./sshall.sh 'chronyc sources'
+./sshall.sh 'chronyc clients'
 ```
 
 # 安裝Cloudera Manager
@@ -799,14 +852,18 @@ CMS
   ```
 - CDH 7.1.7 Parcels
     > 需要有購買CDP License的CLOUDERA帳戶才能下載
+
   ```
   wget --user {cloudera_user} --password {cloudera_password} --recursive --no-parent --no-host-directories https://archive.cloudera.com/p/cdh7/7.1.7.0/parcels/
   ```
+    > 注意：不要漏掉manifest.json
+    
   ```
   # 一整包幾十GB，可以只挑需要的版本下載，以RedHat8為例
   wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976-el8.parcel
   wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976-el8.parcel.sha1
   wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/CDH-7.1.7-1.cdh7.1.7.p0.15945976-el8.parcel.sha256
+  wget https://[username]:[password]@archive.cloudera.com/p/cdh7/7.1.7.0/parcels/manifest.json
   ```
 - PostgreSQL 12
   ```

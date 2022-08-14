@@ -60,9 +60,9 @@ vi hostlist
 ```
 - 內容：
   ```
-  malvin-hdp2-m1-2111.example.com
-  malvin-hdp2-m2-2111.example.com
-  malvin-hdp2-s1-2111.example.com
+  malvin-cdp-m1.example.com
+  malvin-cdp-m2.example.com
+  malvin-cdp-w1.example.com
   ```
 ### 將每台主機加入`/etc/hosts`
 ```
@@ -134,6 +134,10 @@ vi scpall.sh
 
 ```
 chmod +x scpall.sh
+```
+```
+./scpall.sh hostlist
+./scpall.sh iplist
 ```
 ### 修改ssh設定檔`/etc/ssh/sshd_config`與`/etc/ssh/ssh_config`
 修改`/etc/ssh/sshd_config`
@@ -267,14 +271,16 @@ vi /etc/selinux/config
 ### 停用IPv6
 停用
 ```
+./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/lo/disable_ipv6'
 ./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6'
 ./sshall.sh 'echo 1 > /proc/sys/net/ipv6/conf/default/disable_ipv6'
+./sshall.sh "echo 'net.ipv6.conf.lo.disable_ipv6 = 1' >> /etc/sysctl.conf"
 ./sshall.sh "echo 'net.ipv6.conf.all.disable_ipv6 = 1' >> /etc/sysctl.conf"
 ./sshall.sh "echo 'net.ipv6.conf.default.disable_ipv6 = 1' >> /etc/sysctl.conf"
 ```
 確認
 ```
-./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/lo/disable_ipv6; cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
 ```
 檢查有無`/etc/netconfig`
 ```
@@ -312,7 +318,11 @@ vi /etc/netconfig
 ```
 設定「重啟後停用」
 ```
-./sshall.sh "echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local; tail -n 2 /etc/rc.d/rc.local"
+./sshall.sh "echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local
+```
+確認
+```
+./sshall.sh "tail -n 2 /etc/rc.d/rc.local"
 ```
 ### 停用NUMA
 ```
@@ -329,7 +339,7 @@ vi /etc/default/grub
 ```
 ./sshall.sh 'grep -i numa /etc/default/grub'
 ```
-確認BIOS或UEFI
+判斷BIOS或UEFI
 ```
 [ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
 ```
@@ -341,22 +351,6 @@ UEFI產生新的GRUB設定檔
 ```
 ./sshall.sh 'grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg'
 ```
-### 重新啟動確認設定
-```
-./sshall.sh 'sh allhost_ping.sh'
-./sshall.sh 'sh allhost_ssh.sh'
-./sshall.sh 'cat success_ssh'
-./sshall.sh locale
-./sshall.sh sestatus
-./sshall.sh 'systemctl is-active firewalld.service; systemctl is-enabled firewalld.service'
-./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
-./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
-./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
-./sshall.sh 'numactl --hardware'
-```
-
-> `./sshall.sh 'dmesg|grep -i numa'`這個會誤判，不知道為什麼...
-
 ### 安裝JDK8
 安裝cloudera提供的JDK
 ```
@@ -414,8 +408,14 @@ vi /etc/profile
 ```
 確認`java`與`javac`版本
 > 需要找更好的方式確認，可能會command not found
+
+> 新發現：如果安裝預設Repo附上的JAVA，會自動製作`/usr/bin/java`，可以使用下面指令確認；若是安裝Cloudera Repo，沒有製作連結，下面指令就會無效
 ```
-./sshall.sh "export PATH=$PATH/bin;java -version;javac -version" # 必須是雙引號
+./sshall.sh "export PATH=$PATH; java -version; javac -version" # 必須是雙引號
+```
+> 目前已知透過`ssh`執行`source /etc/profile`並不是真的把新設定套用當前所在shell，而是套用在"secure shell"，因此要馬遠端登入執行`source /etc/profile`，要馬重新啟動後套用新設定再驗證
+```
+./sshall.sh 'source /etc/profile; echo $JAVA_HOME; java -version;javac -version'
 ```
 ## 建置NTP Server
 > 若未安裝ntp，則挪到YUM Local Repository建置後
@@ -426,6 +426,10 @@ vi /etc/profile
 修改時區
 ```
 ./sshall.sh 'timedatectl set-timezone Asia/Taipei'
+```
+確認
+```
+./sshall.sh "timedatectl|grep 'Local time'"
 ```
 確認`chronyd`
 ```
@@ -441,8 +445,8 @@ vi /etc/chrony.conf
   ```
   #pool 2.rhel.pool.ntp.org iburst # 註解預設的NTP Server pool
   server malvin-cdp-m1-2111.example.com
-  local stratum 10 # 內網的NTP Server依賴自己主機的時間
   allow 172.16.1.0/24
+  local stratum 10 # 內網的NTP Server依賴自己主機的時間
   ```
 ### 設定Client
 - 修改內容：註解預設用來校時的NTP Server，加上master 01的FQDN
@@ -466,7 +470,9 @@ vi /etc/chrony.conf
 確認校時狀況
 ```
 ./sshall.sh 'chronyc sources'
-./sshall.sh 'chronyc clients'
+```
+```
+chronyc clients
 ```
 
 # 建置YUM Local Repository
@@ -586,6 +592,8 @@ vi /etc/yum.repos.d/cloudera-manager.repo
 將修改後的repo送到每台主機
 ```
 ./scpall.sh /etc/yum.repos.d/oslocal.repo
+```
+```
 ./scpall.sh /etc/yum.repos.d/cloudera-manager.repo
 ```
 確認
@@ -611,11 +619,6 @@ yum install -y postgresql12-server-12.5-1PGDG.rhel8.x86_64.rpm
 ```
 /usr/pgsql-12/bin/postgresql-12-setup initdb
 ```
-啟用
-```
-systemctl enable postgresql-12
-systemctl start postgresql-12
-```
 修改`/var/lib/pgsql/12/data/pg_hba.conf`
 ```
 vi /var/lib/pgsql/12/data/pg_hba.conf
@@ -636,14 +639,19 @@ vi /var/lib/pgsql/12/data/postgresql.conf
 - 修改內容：
   ```
   listen_addresses = '*'
+  max_connections = 500
   shared_buffers = 256MB
   wal_buffers = 8MB
   checkpoint_completion_target = 0.9
   ```
 
-重啟PostgresSQL
+啟用
 ```
-systemctl restart postgresql-12
+systemctl enable postgresql-12
+```
+開啟
+```
+systemctl start postgresql-12
 ```
 建立USER與DATABASE
 ```
@@ -654,11 +662,9 @@ psql
   ```
   CREATE ROLE scm LOGIN PASSWORD 'scm';
   CREATE DATABASE scm OWNER scm ENCODING 'UTF8';
-
-  CREATE ROLE rman LOGIN PASSWORD 'rman';
-  CREATE DATABASE rman OWNER rman ENCODING 'UTF8';
-
-  # 以下視使用到的Component建立
+  ```
+  ```
+  -- 以下視使用到的Component建立
   CREATE ROLE hue LOGIN PASSWORD 'hue';
   CREATE DATABASE hue OWNER hue ENCODING 'UTF8';
 
@@ -668,15 +674,27 @@ psql
   CREATE ROLE oozie LOGIN PASSWORD 'oozie';
   CREATE DATABASE oozie OWNER oozie ENCODING 'UTF8';
 
+  CREATE ROLE ranger LOGIN PASSWORD 'ranger';
+  CREATE DATABASE ranger OWNER ranger ENCODING 'UTF8';
+
   CREATE ROLE das LOGIN PASSWORD 'das';
   CREATE DATABASE das OWNER das ENCODING 'UTF8';
 
   CREATE ROLE schemaregistry LOGIN PASSWORD 'schemaregistry';
   CREATE DATABASE schemaregistry OWNER schemaregistry ENCODING 'UTF8';
+  
+  CREATE ROLE rman LOGIN PASSWORD 'rman';
+  CREATE DATABASE rman OWNER rman ENCODING 'UTF8';
 
   CREATE ROLE smm LOGIN PASSWORD 'smm';
   CREATE DATABASE smm OWNER smm ENCODING 'UTF8';
-  
+  ```
+  ```
+  -- 確認
+  \l
+  ```
+  ```
+  -- 離開
   \q
   ```
 
@@ -693,11 +711,13 @@ exit
 ./sshall.sh locale
 ./sshall.sh sestatus
 ./sshall.sh 'systemctl is-active firewalld.service; systemctl is-enabled firewalld.service'
-./sshall.sh 'cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
+./sshall.sh 'cat /proc/sys/net/ipv6/conf/lo/disable_ipv6; cat /proc/sys/net/ipv6/conf/all/disable_ipv6; cat /proc/sys/net/ipv6/conf/default/disable_ipv6; cat /etc/sysctl.conf | grep disable_ipv6'
 ./sshall.sh 'sysctl -a 2>/dev/null | grep swappiness ; cat /proc/sys/vm/swappiness; cat /etc/sysctl.conf | grep swappiness'
 ./sshall.sh 'cat /sys/kernel/mm/transparent_hugepage/defrag; cat /sys/kernel/mm/transparent_hugepage/enabled'
 ./sshall.sh 'dmesg|grep -i numa'
+./sshall.sh 'numactl --hardware'
 ```
+> `./sshall.sh 'dmesg|grep -i numa'`這個不容易閱讀，容易誤判
 ```
 ./sshall.sh 'yum clean all'
 ./sshall.sh 'yum repolist'
@@ -707,7 +727,7 @@ exit
 ./sshall.sh 'yum install cloudera-manager-server' # Cloudera Manager
 ```
 ```
-./sshall.sh "echo $JAVA_HOME" # 必須要是雙引號
+./sshall.sh "export PATH=$JAVA_HOME/bin; echo $JAVA_HOME" # 必須要是雙引號
 ./sshall.sh "export PATH=$JAVA_HOME/bin; java -version; javac -version" # 必須是雙引號
 ```
 ```

@@ -1,0 +1,1 @@
+FTDC, full time diagnostic data capture

@@ -138,6 +138,7 @@ chmod +x scpall.sh
 ```
 ./scpall.sh hostlist
 ./scpall.sh iplist
+./scpall.sh /etc/hosts
 ```
 ### 修改ssh設定檔`/etc/ssh/sshd_config`與`/etc/ssh/ssh_config`
 修改`/etc/ssh/sshd_config`
@@ -194,13 +195,17 @@ vi allhost_ssh.sh
   while read h
   do
       now=$(date +'%Y-%m-%d %H:%M:%S')
-      ssh $h "echo $now login from $HOSTNAME >> /root/success_ssh" </dev/null
-  done < /root/hostlist
+      ssh $h "echo $now login from $HOSTNAME >> success_ssh" </dev/null
+  done < hostlist
   ```
 ```
 chmod a+x allhost_ssh.sh
 ./scpall.sh allhost_ssh.sh
 ./sshall.sh 'sh allhost_ssh.sh'
+```
+確認
+```
+./sshall.sh 'cat success_ssh'
 ```
 ## OS設定
 ### 設定語言
@@ -318,7 +323,7 @@ vi /etc/netconfig
 ```
 設定「重啟後停用」
 ```
-./sshall.sh "echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local
+./sshall.sh "echo 'echo never > /sys/kernel/mm/transparent_hugepage/defrag' >> /etc/rc.d/rc.local; echo 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' >> /etc/rc.d/rc.local; chmod +x /etc/rc.d/rc.local"
 ```
 確認
 ```
@@ -489,7 +494,7 @@ mkdir /cdrom
 ```
 掛載
 ```
-mount CentOS-7-x86_64-Minimal-2009.iso /cdrom 
+mount rhel-8.2-x86_64-dvd.iso /cdrom 
 ```
 確認掛載成功
 ```

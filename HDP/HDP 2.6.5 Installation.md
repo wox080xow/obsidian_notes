@@ -496,6 +496,7 @@ psql
   GRANT ALL PRIVILEGES ON DATABASE hive TO hive;
   \q
   ```
+
 回到root使用者！
 ```
 exit

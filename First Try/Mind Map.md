@@ -1,0 +1,58 @@
+- 優化方向
+    - [ ] 程式碼原子化
+    - [ ] sql stmt 整理於一個方便管理的地方
+    - [ ] 設計 test case
+    - [ ] 檢核 ctpt_ratio
+    - [ ] 檢核 id 型別優先判斷，另有 99 判斷
+    - [ ] lock 等待 error 利用 nifi 重回佇列
+    - [ ] 有 before_rec 只需更新一次，目前 redis 更新兩次
+    - [ ] 減少訪問 db
+
+- flowfile 檢核 & 補充
+    - prsr_type
+    - multi_type
+    - id1/id2
+    - cust_id
+    - sdp_id
+
+- redis 以 meter_id 取得鎖
+
+- 主流程起點------------------------------------
+    - meter_id 不存在於 mdes.sdp
+        - 是 **一號一表** 情境
+            - 用 sdp.cust_id 取出資料，以此筆資料 更新 sdp 主檔(換表)
+        - 不是 **一號一表** 情境
+            - 建立 sdp 主檔(裝新表)
+    - meter_id 存在於 mdes.sdp
+        - d. 檢查 flowfile 是否與 sdp 資料重複
+            - 重複資料 比對cust_id、ct_ratio、pt_ratio、ctpt_ratio、tou_id
+                - 更新 redis, 發佈 kafka, 寫 error_log 去重複
+            - 非重複資料 檢查 meter_id 以 end_time 9999-12-31 判斷存活
+                - 查詢到之 meter_id 歷程資料有存活電表 電號可能不同
+                    - 沒有 after_rec
+                        - 更新 sdp 主檔
+                    - 有 after_rec
+                        - 以 flowfile 建立 sdp data_new 資料
+                            - 檢查 before_rec
+                                - 無 before_rec
+                                    - gp 插入 sdp data_new 資料
+                                - 有 before_rec
+                                    - gp 插入 sdp data_new 資料
+                                        - 更新 before_rec 的 sdp_end_time
+                                            - 總共 更新 2 次 redis ，發佈 2 kafka
+                - **meter_id 歷程資料** 全終止--------
+                    - 以 meter_id 取得最近的一筆資料，再以 sdp_id 取得 **sdp_id 歷程**
+                        - 此 **sdp_id 歷程** 有活著 meter_id
+                            - `sdp.cust_id == flowfile.cust_id`
+                                - 換表 更新 sdp 主檔
+                            - `sdp.cust_id != flowfile.cust_id`
+                                - 用 flowfile cust_id, meter_id 得出 sdp_id 並查詢是否存在活著電表
+                                    - `flowfile.sdp_id` 有活著電表
+                                        - 更新 sdp 主檔
+                                    - `flowfile.sdp_id` 沒有活著電表
+                                        - sdp_id 不存在 建立 sdp 主檔
+                        - **sdp_id 歷程** 全終止------------
+                            - `flowfile.sdp_id` 已存在SDP檔且活著
+                                - 更新 sdp 主檔
+                            - `flowfile.sdp_id` 不存在SDP檔
+                                - 建立 sdp 主檔

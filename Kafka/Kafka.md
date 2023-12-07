@@ -158,8 +158,7 @@ kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic malvin
 ```
 從頭讀到尾
 ```
-kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic malvin --from
--beginning
+kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic malvin --from-beginning
 ```
 ![](https://i.imgur.com/b0QcC6p.png)
 Consumer Group
